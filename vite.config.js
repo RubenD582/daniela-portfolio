@@ -4,7 +4,7 @@ import tailwindcss from 'tailwindcss'
 import autoprefixer from 'autoprefixer'
 
 export default defineConfig({
-  base: 'daniela/',
+  base: '/',
   plugins: [react()],
   css: {
     postcss: {
