@@ -2,11 +2,11 @@ import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react'
 import TiltCard from '../components/TiltCard';
-import service1 from '../assets/service1.png';
-import service2 from '../assets/service2.png';
-import service3 from '../assets/service3.png';
-import background from '../assets/background.png';
-import aboutme from '../assets/aboutme.png';
+import service1 from '../assets/service1.jpg';
+import service2 from '../assets/service2.jpg';
+import service3 from '../assets/service3.jpg';
+import background from '../assets/background.jpg';
+import aboutme from '../assets/aboutme.jpg';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 
