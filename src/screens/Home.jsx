@@ -19,7 +19,7 @@ export default function Home() {
     <div className="min-h-screen bg-white font-sans">
       {/* Hero Section */}
 			<div
-				className="relative bg-[#EFA498]"
+				className="relative bg-[#F3BAB1]"
 				style={{
 					backgroundImage: `url(${background})`,
 					backgroundRepeat: 'repeat',
@@ -92,7 +92,7 @@ export default function Home() {
 			</div>
 
       {/* About Section */}
-      <div className="bg-[#EFA498] border-t border-b" data-aos="fade-up"
+      <div className="bg-[#F3BAB1] border-t border-b" data-aos="fade-up"
 				style={{
 					backgroundImage: `url(${background})`,
 					backgroundRepeat: 'repeat',
