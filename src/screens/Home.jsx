@@ -5,8 +5,8 @@ import TiltCard from '../components/TiltCard';
 import service1 from '../assets/service1.jpg';
 import service2 from '../assets/service2.jpg';
 import service3 from '../assets/service3.jpg';
-import background from '../assets/background.jpg';
-import aboutme from '../assets/aboutme.jpg';
+import background from '../assets/background.png';
+import aboutme from '../assets/aboutme.png';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 
@@ -19,35 +19,45 @@ export default function Home() {
     <div className="min-h-screen bg-white font-sans">
       {/* Hero Section */}
 			<div
-				className="relative bg-[#F7D2C7]"
+				className="relative bg-[#EFA498]"
 				style={{
 					backgroundImage: `url(${background})`,
 					backgroundRepeat: 'repeat',
 					backgroundSize: '300px',
 					backgroundPosition: 'center',
+					backgroundBlendMode: 'color-burn',
+					zIndex: 0,
 				}}
 				data-aos="fade-in"
 				data-aos-duration="2000"
-			>
-				<div className="max-w-6xl mx-auto px-6 py-24 md:px-4">
-					<div className="text-center">
-						<h1 className="text-4xl md:text-[50px] font-bodoni-moda text-gray-900 mb-5 md:mb-5 text-white">
-							Modern Nail Artistry
-						</h1>
-						<p className="text-gray-500 mb-14 max-w-2xl mx-auto text-[14px] md:text-[18px] font-montserrat font-thin text-white">
-							Discover premium, stylish press‑on nails by Press Ons by Dani for every occasion.
-						</p>
-						<a
-							href="https://wa.me/27661043677"
-							target="_blank"
-							rel="noopener noreferrer"
-						>
-							<button className="group inline-flex text-white border-white items-center bg-[#FFFFFF30] border-[1px] border-gray-900 text-gray-900 font-thin px-8 py-3 hover:bg-[#FFFFFF00] transition-all duration-300">
-								Book Session
-								<ArrowRight className="ml-2 transition-transform duration-300 group-hover:translate-x-3" size={14} />
-							</button>
-						</a>
+			>				
+				<div className='relative z-[10]'>
+					<div className="max-w-6xl mx-auto px-6 py-24 md:px-4">
+						<div className="text-center">
+							<h1 className="text-4xl md:text-[50px] font-bodoni-moda text-gray-900 mb-5 md:mb-5 text-white">
+								Modern Nail Artistry
+							</h1>
+							<p className="text-gray-500 mb-14 max-w-2xl mx-auto text-[14px] md:text-sm font-montserrat font-thin text-white">
+								Discover premium, stylish press‑on nails by Press Ons by Dani for every occasion.
+							</p>
+							<a
+								href="https://wa.me/27661043677"
+								target="_blank"
+								rel="noopener noreferrer"
+							>
+								<button 
+									className="group inline-flex text-white border-white items-center bg-[#FFFFFF10] border-[1px] border-gray-900 text-gray-900 font-thin px-8 py-3 hover:bg-[#FFFFFF40] transition-all duration-300"
+									style={{
+										backdropFilter: 'blur(8px)',
+										WebkitBackdropFilter: 'blur(8px)' // For Safari
+									}}
+								>
+									Book Session
+									<ArrowRight className="ml-2 transition-transform duration-300 group-hover:translate-x-3" size={14} />
+								</button>
+							</a>
 
+						</div>
 					</div>
 				</div>
 			</div>
@@ -82,25 +92,36 @@ export default function Home() {
 			</div>
 
       {/* About Section */}
-      <div className="bg-[#FBE9E3] border-t border-b" data-aos="fade-up">
-        <div className="max-w-6xl mx-auto px-4 py-24 md:flex items-center gap-12">
-          <div className="md:w-1/2 mb-20 md:mb-0">
-						<img
-							src={aboutme}
-							alt={"aboutme"}
-							className="w-[400px] object-cover mb-4"
-						/>
-          </div>
-          <div className="md:w-1/2 text-center md:text-left">
-						<h2 className="text-4xl font-bodoni-moda text-gray-900 mb-6 mt-0 md:mt-[50px]" data-aos="fade-up">
-							What Makes Me Different?
-						</h2>
-						<p className="text-gray-500 mb-6 leading-relaxed text-sm font-montserrat font-thin" data-aos="fade-up">
-							My passion for nail design sets me apart—each nail is a canvas for creativity and self-expression. I combine modern techniques with innovative artistry to craft designs that are as unique as you are, using only premium, non-toxic products. This commitment to clean, conscious beauty ensures that every detail is meticulously curated, resulting in nail art that is both striking and enduring.
-						</p>
-					</div>
+      <div className="bg-[#EFA498] border-t border-b" data-aos="fade-up"
+				style={{
+					backgroundImage: `url(${background})`,
+					backgroundRepeat: 'repeat',
+					backgroundSize: '300px',
+					backgroundPosition: 'center',
+					backgroundBlendMode: 'color-burn',
+					zIndex: 0,
+				}}
+			>
+        <div className='z-[10]'>
+					<div className="max-w-6xl mx-auto px-4 py-14 md:flex items-center gap-12">
+						<div className="md:w-1/2 mb-20 md:mb-0">
+							<img
+								src={aboutme}
+								alt={"aboutme"}
+								className="w-[400px] object-cover mb-4"
+							/>
+						</div>
+						<div className="md:w-1/2 text-center md:text-left">
+							<h2 className="text-4xl font-bodoni-moda text-gray-900 mb-6 mt-0 md:mt-[50px] text-white" data-aos="fade-up">
+								What Makes Me Different?
+							</h2>
+							<p className="text-gray-500 mb-6 leading-relaxed text-sm font-montserrat font-thin text-white" data-aos="fade-up">
+								My passion for nail design sets me apart—each nail is a canvas for creativity and self-expression. I combine modern techniques with innovative artistry to craft designs that are as unique as you are, using only premium, non-toxic products. This commitment to clean, conscious beauty ensures that every detail is meticulously curated, resulting in nail art that is both striking and enduring.
+							</p>
+						</div>
 
-        </div>
+					</div>
+				</div>
       </div>
 
 			<div className="max-w-6xl mx-auto px-4 py-16" data-aos="fade-up">
