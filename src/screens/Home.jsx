@@ -29,7 +29,6 @@ export default function Home() {
 					zIndex: 0,
 				}}
 				data-aos="fade-in"
-				data-aos-duration="2000"
 			>				
 				<div className='relative z-[10]'>
 					<div className="max-w-6xl mx-auto px-6 py-24 md:px-4">
