@@ -160,7 +160,7 @@ export default function Home() {
         <div className="max-w-6xl mx-auto px-4 py-12">
           <div className="text-center">
             <p className="font-dancing-script text-2xl mb-4 text-gray-900">
-              Daniela Aalves
+              Daniela Alves
             </p>
             <div className="flex justify-center space-x-6 mb-4">
               {['Instagram', 'Pinterest', 'TikTok'].map((social) => (
@@ -170,7 +170,7 @@ export default function Home() {
               ))}
             </div>
             <p className="text-sm text-gray-400">
-              &copy; {new Date().getFullYear()} Daniela Aalves. All rights reserved.
+              &copy; {new Date().getFullYear()} Daniela Alves. All rights reserved.
             </p>
           </div>
         </div>
