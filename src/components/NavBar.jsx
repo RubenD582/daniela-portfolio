@@ -13,7 +13,7 @@ export default function Navbar() {
             to="/"
             className="text-2xl font-dancing-script text-gray-900 font-bold"
           >
-            Daniela Aalves
+            Daniela Alves
           </Link>
           
           {/* Desktop Menu */}
