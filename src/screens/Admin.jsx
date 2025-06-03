@@ -61,6 +61,13 @@ const AdminAuth = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [checkingAuth, setCheckingAuth] = useState(true);
 
+  // Immediately clear any existing Firebase session on mount:
+  useEffect(() => {
+    signOut(auth).catch((err) => {
+      console.error("Error signing out on mount:", err);
+    });
+  }, []);
+
   // Ref to hold the inactivity-timeout ID
   const inactivityTimerRef = useRef(null);
 
@@ -151,7 +158,7 @@ const AdminAuth = ({ children }) => {
     );
   }
 
-  // If authenticated, render children (i.e., <AdminPanel />) and no “Log Out” button
+  // If authenticated, render children (i.e., <AdminPanel />)
   if (isAuthenticated) {
     return <>{children}</>;
   }
