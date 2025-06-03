@@ -384,7 +384,7 @@ export default function Designs() {
   if (showInitialLoading) {
     return (
       <div className="min-h-screen px-6 py-10">
-        <div className="max-w-7xl mx-auto columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 space-y-6">
+        <div className="max-w-7xl mx-auto columns-1 sm:columns-1 lg:columns-3 xl:columns-4 gap-4 space-y-6">
           {Array.from({ length: 12 }).map((_, idx) => (
             <div
               key={idx}
@@ -405,7 +405,7 @@ export default function Designs() {
     <div className="min-h-screen">
       {/* Gallery Grid */}
       <div className="max-w-7xl mx-auto px-6 pb-10 mt-6">
-        <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 space-y-6">
+        <div className="columns-1 sm:columns-1 lg:columns-3 xl:columns-4 gap-4 space-y-6">
           {visibleDesigns.map((design, index) => (
             <DesignCard
               key={design.id}
