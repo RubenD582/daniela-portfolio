@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- Immediately reload index.html, preserving the original path -->
+    <meta http-equiv="refresh" content="0; url=./index.html" />
+    <title>Redirecting…</title>
+  </head>
+  <body>
+    <script>
+      // Fallback in case the meta tag is ignored or delayed.
+      // It grabs the current pathname (e.g. “/admin”) and reloads index.html
+      // so React Router’s BrowserRouter can read window.location.pathname.
+      const { pathname, search, hash } = window.location;
+      window.location.replace(
+        `${window.location.origin}/index.html${pathname}${search}${hash}`
+      );
+    </script>
+  </body>
+</html>
