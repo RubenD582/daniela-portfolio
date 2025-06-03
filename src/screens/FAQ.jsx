@@ -54,7 +54,7 @@ export default function FAQ() {
                 }}
                 >
                 <div className="px-8 pb-8">
-                    <p className="text-gray-600 font-montserrat leading-relaxed text-sm">
+                    <p className="text-gray-600/70 font-montserrat leading-relaxed text-sm">
                     {item.answer}
                     </p>
                 </div>
