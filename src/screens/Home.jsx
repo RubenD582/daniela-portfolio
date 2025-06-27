@@ -154,7 +154,7 @@ export default function Home() {
                 transitionDelay: isVisible.hero ? '200ms' : '0ms'
               }}
             >
-              DANIELA <span>ALVES</span>
+              BRINGING FASION
               <span
                 className={`block text-stone-900 transition-all duration-[1500ms] ease-[cubic-bezier(0.19,1,0.22,1)] ${
                   isVisible.hero
@@ -165,7 +165,7 @@ export default function Home() {
                   transitionDelay: isVisible.hero ? '100ms' : '0ms'
                 }}
               >
-                NAIL <span className='text-[#CFB53B]'>TECHNICIAN</span>
+                TO YOUR <span className='text-[#CFB53B]'>FINGERTIPS.</span>
               </span>
             </h1>
 
