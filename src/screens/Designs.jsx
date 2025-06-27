@@ -1,10 +1,9 @@
 // src/pages/Designs.jsx
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import {
   X,
   Heart,
   Eye,
-  Share2,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
@@ -33,7 +32,7 @@ const firebaseApp = initializeApp(firebaseConfig);
 const db = getDatabase(firebaseApp);
 const storage = getStorage(firebaseApp);
 
-// Individual Design Card Component with its own loading state
+// Individual Design Card Component
 const DesignCard = ({ 
   design, 
   index, 
@@ -41,35 +40,68 @@ const DesignCard = ({
   favorites, 
   likesMap, 
   handleHeartClick, 
-  openLightbox,
-  shareDesign 
+  openLightbox
 }) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
+  const [naturalDimensions, setNaturalDimensions] = useState({ width: 0, height: 0 });
 
-  const handleImageLoad = () => {
+  const handleImageLoad = (e) => {
     setImageLoaded(true);
+    setNaturalDimensions({
+      width: e.target.naturalWidth,
+      height: e.target.naturalHeight
+    });
   };
 
   const handleImageError = () => {
     setImageError(true);
-    setImageLoaded(true); // Stop showing skeleton even on error
+    setImageLoaded(true);
   };
+
+  // Calculate dynamic height for masonry effect
+  const getDynamicHeight = () => {
+    if (!imageLoaded || imageError || !naturalDimensions.width || !naturalDimensions.height) {
+      return 300; // Default height
+    }
+    
+    // Base width for calculation (assuming 300px column width)
+    const baseWidth = 300;
+    const aspectRatio = naturalDimensions.height / naturalDimensions.width;
+    
+    // Calculate height maintaining aspect ratio, with some constraints
+    let height = baseWidth * aspectRatio;
+    
+    // Add some randomness for more variety (optional)
+    const variance = Math.random() * 40 - 20; // -20 to +20px
+    height += variance;
+    
+    // Constrain height between reasonable bounds
+    return Math.max(200, Math.min(500, height));
+  };
+
+  const dynamicHeight = getDynamicHeight();
 
   return (
     <div
-      className="break-inside-avoid group cursor-pointer transform transition-all duration-500 hover:scale-[1.02]"
+      className="group cursor-pointer break-inside-avoid mb-3 lg:mb-6"
       style={{
         animationDelay: `${index * 50}ms`,
         animation: "fadeInUp 0.6s ease-out forwards",
       }}
     >
-      <div className="relative bg-white rounded-2xl overflow-hidden transition-all duration-500">
-        <div className="relative overflow-hidden">
-          {/* Skeleton/Placeholder - shown until image loads */}
+      <div className="relative bg-white hover:border-black transition-all duration-300 overflow-hidden">
+        <div 
+          className="relative overflow-hidden"
+          style={{ height: imageLoaded ? 'auto' : `${dynamicHeight}px` }}
+        >
+          {/* Skeleton/Placeholder */}
           {!imageLoaded && (
-            <div className="w-full h-64 bg-gradient-to-r from-gray-300 via-gray-200 to-gray-300 rounded-t-2xl overflow-hidden relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-gray-300 transform -skew-x-12 w-full h-full"></div>
+            <div 
+              className="w-full bg-gradient-to-br from-stone-300 via-stone-200 to-stone-300 animate-pulse" 
+              style={{ height: `${dynamicHeight}px` }}
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-stone-300 to-transparent animate-shimmer transform -skew-x-12 w-full h-full"></div>
             </div>
           )}
           
@@ -78,81 +110,59 @@ const DesignCard = ({
             <img
               src={imageURL}
               alt={design.title}
-              className={`w-full h-auto object-cover transition-all duration-700 group-hover:scale-110 ${
+              className={`w-full h-auto object-cover transition-all duration-500 group-hover:scale-105 ${
                 imageLoaded ? 'opacity-100' : 'opacity-0 absolute inset-0'
               }`}
               loading="lazy"
               onLoad={handleImageLoad}
               onError={handleImageError}
               onClick={() => openLightbox(design)}
+              style={imageLoaded ? {} : { height: `${dynamicHeight}px` }}
             />
           )}
 
           {/* Error State */}
           {imageError && (
-            <div className="w-full h-64 bg-gray-100 flex items-center justify-center rounded-t-2xl">
-              <div className="text-gray-400 text-center">
-                <div className="text-2xl mb-2">🖼️</div>
-                <div className="text-sm">Failed to load image</div>
+            <div 
+              className="w-full bg-stone-100 flex items-center justify-center"
+              style={{ height: `${dynamicHeight}px` }}
+            >
+              <div className="text-stone-400 text-center">
+                <div className="text-2xl mb-2">✨</div>
+                <div className="text-xs">Design #{design.id}</div>
               </div>
             </div>
           )}
 
-          {/* Hover Overlay - only show when image is loaded */}
+          {/* Hover Overlay */}
           {imageLoaded && !imageError && (
-            <div
-              className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300"
-              onClick={(e) => openLightbox(design, e)}
-            >
-              <div className="absolute bottom-4 left-4 right-4 text-white">
-                <h3 className="font-semibold text-lg mb-1">
-                  {design.title}
-                </h3>
-                <p className="text-sm opacity-90 mb-3">
-                  {design.description}
-                </p>
-                <div className="flex items-center justify-between">
-                  {/* Heart icon + like count */}
-                  <div className="flex items-center space-x-2">
-                    <button
-                      onClick={(e) => handleHeartClick(design.id, e)}
-                      className={`p-2 rounded-full transition-colors duration-300 ${
-                        favorites.has(design.id)
-                          ? "bg-red-500 text-white"
-                          : "bg-white/20 text-white hover:bg-white/30"
-                      }`}
-                    >
-                      <Heart
-                        size={16}
-                        fill={
-                          favorites.has(design.id) ? "currentColor" : "none"
-                        }
-                      />
-                    </button>
-                    <span className="text-white font-medium text-xs">
-                      {(likesMap[design.id] ?? 0).toLocaleString()}
-                    </span>
-                  </div>
-
-                  <div className="flex gap-2">
-                    <div
-                      onClick={(e) => openLightbox(design, e)}
-                      className="p-2 rounded-full bg-white/20 text-white hover:bg-white/30 transition-all duration-300"
-                    >
-                      <Eye size={16} />
-                    </div>
-                    <div
-                      onClick={(e) => shareDesign(design, e)}
-                      className="p-2 rounded-full bg-white/20 text-white hover:bg-white/30 transition-all duration-300"
-                    >
-                      <Share2 size={16} />
-                    </div>
-                  </div>
-                </div>
+            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">
+              <div className="flex space-x-3">
+                <button
+                  onClick={(e) => handleHeartClick(design.id, e)}
+                  className={`p-3 rounded-full transition-all duration-200 ${
+                    favorites.has(design.id)
+                      ? "bg-white text-black"
+                      : "bg-white/20 text-white hover:bg-white hover:text-black"
+                  }`}
+                >
+                  <Heart
+                    size={18}
+                    fill={favorites.has(design.id) ? "currentColor" : "none"}
+                  />
+                </button>
+                <button
+                  onClick={(e) => openLightbox(design, e)}
+                  className="p-3 rounded-full bg-white/20 text-white hover:bg-white hover:text-black transition-all duration-200"
+                >
+                  <Eye size={18} />
+                </button>
               </div>
             </div>
           )}
         </div>
+
+        <div className="pt-3"></div>
       </div>
     </div>
   );
@@ -179,66 +189,23 @@ export default function Designs() {
 
   // Hold the fetched URLs for each design
   const [imageURLs, setImageURLs] = useState({});
-  const [urlsFetched, setUrlsFetched] = useState(false);
 
   // Static design metadata
   const designs = [
-    { id: 1, title: "", category: "classic", description: "" },
-    { id: 2, title: "", category: "classic", description: "" },
-    { id: 3, title: "", category: "classic", description: "" },
-    { id: 4, title: "", category: "classic", description: "" },
-    { id: 5, title: "", category: "classic", description: "" },
-    { id: 6, title: "", category: "classic", description: "" },
-    { id: 7, title: "", category: "classic", description: "" },
-    { id: 8, title: "", category: "classic", description: "" },
-    { id: 9, title: "", category: "classic", description: "" },
-    { id: 10, title: "", category: "classic", description: "" },
-    { id: 11, title: "", category: "classic", description: "" },
-    { id: 12, title: "", category: "classic", description: "" },
-    { id: 13, title: "", category: "classic", description: "" },
-    { id: 14, title: "", category: "classic", description: "" },
-  ];
-
-  // Categories
-  const categories = [
-    { id: "all", name: "All Designs", count: designs.length },
-    {
-      id: "liked",
-      name: "Liked",
-      count: Array.from(favorites).filter((id) =>
-        designs.some((d) => d.id === id)
-      ).length,
-    },
-    {
-      id: "classic",
-      name: "Classic",
-      count: designs.filter((d) => d.category === "classic").length,
-    },
-    {
-      id: "modern",
-      name: "Modern",
-      count: designs.filter((d) => d.category === "modern").length,
-    },
-    {
-      id: "artistic",
-      name: "Artistic",
-      count: designs.filter((d) => d.category === "artistic").length,
-    },
-    {
-      id: "feminine",
-      name: "Feminine",
-      count: designs.filter((d) => d.category === "feminine").length,
-    },
-    {
-      id: "bold",
-      name: "Bold",
-      count: designs.filter((d) => d.category === "bold").length,
-    },
-    {
-      id: "luxury",
-      name: "Luxury",
-      count: designs.filter((d) => d.category === "luxury").length,
-    },
+    { id: 1, title: "Classic French", category: "classic", description: "Timeless elegance with clean lines" },
+    { id: 2, title: "Nude Sophistication", category: "classic", description: "Minimalist beauty in natural tones" },
+    { id: 3, title: "Black & White", category: "classic", description: "Monochrome perfection" },
+    { id: 4, title: "Geometric Lines", category: "modern", description: "Contemporary angular design" },
+    { id: 5, title: "Abstract Art", category: "artistic", description: "Creative expression on nails" },
+    { id: 6, title: "Floral Elegance", category: "feminine", description: "Delicate botanical designs" },
+    { id: 7, title: "Bold Statement", category: "bold", description: "Eye-catching dramatic style" },
+    { id: 8, title: "Luxury Gold", category: "luxury", description: "Premium metallic accents" },
+    { id: 9, title: "Modern Minimal", category: "modern", description: "Clean contemporary aesthetic" },
+    { id: 10, title: "Artistic Expression", category: "artistic", description: "Unique creative design" },
+    { id: 11, title: "Feminine Touch", category: "feminine", description: "Soft and romantic style" },
+    { id: 12, title: "Bold Contrast", category: "bold", description: "High-impact visual design" },
+    { id: 13, title: "Luxury Pearl", category: "luxury", description: "Elegant premium finish" },
+    { id: 14, title: "Classic Elegance", category: "classic", description: "Traditional refined beauty" },
   ];
 
   // Filter based on category or "liked"
@@ -262,10 +229,8 @@ export default function Designs() {
       setLikesLoaded(true);
     });
 
-    // Fetch image URLs (don't wait for all to complete)
+    // Fetch image URLs
     const fetchImageURLs = async () => {
-      const urls = {};
-      
       // Fetch URLs for currently visible designs first
       const priorityDesigns = visibleDesigns.slice(0, 8);
       
@@ -273,8 +238,6 @@ export default function Designs() {
         const imgRef = storageRef(storage, `Designs/${design.id}.jpg`);
         try {
           const downloadUrl = await getDownloadURL(imgRef);
-          urls[design.id] = downloadUrl;
-          // Update state immediately as each URL is fetched
           setImageURLs(prev => ({ ...prev, [design.id]: downloadUrl }));
         } catch (err) {
           console.error(`Failed to fetch download URL for design ${design.id}:`, err);
@@ -292,8 +255,6 @@ export default function Designs() {
           console.error(`Failed to fetch download URL for design ${design.id}:`, err);
         }
       }
-      
-      setUrlsFetched(true);
     };
 
     fetchImageURLs();
@@ -319,7 +280,6 @@ export default function Designs() {
   const handleHeartClick = (id, e) => {
     e.stopPropagation();
     if (favorites.has(id)) {
-      // Unlike
       changeLikes(id, -1);
       setFavorites((prev) => {
         const copy = new Set(prev);
@@ -331,7 +291,6 @@ export default function Designs() {
         return copy;
       });
     } else {
-      // Like
       changeLikes(id, +1);
       setFavorites((prev) => {
         const copy = new Set(prev);
@@ -372,40 +331,38 @@ export default function Designs() {
     setVisibleCount((prev) => prev + 8);
   };
 
-  const shareDesign = (design, e) => {
-    e.stopPropagation();
-    // Implement share functionality
-    console.log('Sharing design:', design.id);
-  };
-
-  // Show initial loading only if likes haven't loaded yet
+  // Show initial loading
   const showInitialLoading = !likesLoaded;
 
   if (showInitialLoading) {
     return (
-      <div className="min-h-screen px-6 py-10">
-        <div className="max-w-7xl mx-auto columns-1 sm:columns-1 lg:columns-3 xl:columns-4 gap-4 space-y-6">
-          {Array.from({ length: 12 }).map((_, idx) => (
-            <div
-              key={idx}
-              className="break-inside-avoid animate-pulse"
-              style={{ animationDelay: `${idx * 25}ms` }}
-            >
-              <div className="w-full h-64 bg-gradient-to-r from-gray-300 via-gray-200 to-gray-300 rounded-2xl overflow-hidden relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-gray-300 to-transparent animate-shimmer transform -skew-x-12 w-full h-full"></div>
+      <div className="min-h-screen bg-white pt-[70px]">
+        <div className="max-w-7xl mx-auto px-6 py-8">
+          <div className="columns-2 sm:columns-2 lg:columns-3 xl:columns-4 gap-6">
+            {Array.from({ length: 12 }).map((_, idx) => (
+              <div key={idx} className="group cursor-pointer break-inside-avoid mb-3 lg:mb-6">
+                <div className="relative bg-white overflow-hidden">
+                  <div 
+                    className="relative overflow-hidden bg-gradient-to-br from-stone-300 via-stone-200 to-stone-300 animate-pulse" 
+                    style={{ height: `${200 + Math.random() * 200}px` }}
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent animate-shimmer transform -skew-x-12 w-full h-full"></div>
+                  </div>
+                  <div className="pt-3"></div>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen">
-      {/* Gallery Grid */}
-      <div className="max-w-7xl mx-auto px-6 pb-10 mt-6">
-        <div className="columns-1 sm:columns-1 lg:columns-3 xl:columns-4 gap-4 space-y-6">
+    <div className="min-h-screen bg-white pt-[70px]">
+      {/* Gallery */}
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        <div className="columns-2 sm:columns-2 lg:columns-3 xl:columns-4 gap-6">
           {visibleDesigns.map((design, index) => (
             <DesignCard
               key={design.id}
@@ -416,87 +373,93 @@ export default function Designs() {
               likesMap={likesMap}
               handleHeartClick={handleHeartClick}
               openLightbox={openLightbox}
-              shareDesign={shareDesign}
             />
           ))}
         </div>
 
         {/* Load More Button */}
         {visibleCount < filteredDesigns.length && (
-          <div className="text-center mt-16 mb-10">
+          <div className="text-center mt-12">
             <button
               onClick={loadMore}
-              className="px-5 py-3 text-xs bg-black text-white rounded-full font-medium transform hover:scale-105 transition-all duration-300"
+              className="px-8 py-3 border border-black text-black hover:bg-black hover:text-white transition-all duration-300 font-medium"
             >
-              Load More Designs ({filteredDesigns.length - visibleCount}{" "}
-              remaining)
+              Load More ({filteredDesigns.length - visibleCount} remaining)
             </button>
+          </div>
+        )}
+
+        {filteredDesigns.length === 0 && (
+          <div className="text-center py-16">
+            <div className="text-gray-400 mb-4">
+              <Heart size={48} className="mx-auto mb-4" />
+              <h3 className="text-lg font-medium mb-2">No designs found</h3>
+              <p className="text-sm">Try selecting a different category or add some designs to your favorites.</p>
+            </div>
           </div>
         )}
       </div>
 
       {/* Lightbox Modal */}
       {selectedImage && (
-        <div className="fixed inset-0 bg-black/90 z-50 flex flex-col items-center justify-center p-4">
-          <div
-            className="relative w-full max-w-md flex justify-center"
-            onClick={(e) => e.stopPropagation()}
-          >
+        <div className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4">
+          <div className="relative max-w-4xl w-full">
             {/* Close Button */}
             <button
               onClick={closeLightbox}
-              className="absolute -top-12 right-0 text-white hover:text-gray-300 transition-colors duration-300 z-20"
+              className="absolute top-0 right-0 text-white hover:text-gray-300 transition-colors duration-200 z-20"
             >
-              <X size={32} />
+              <X size={24} />
             </button>
 
             {/* Navigation Buttons */}
             <button
               onClick={() => navigateLightbox("prev")}
-              className="absolute left-0 top-1/2 -translate-y-1/2 text-white hover:text-gray-300 transition-colors duration-300 bg-black/50 rounded-full p-3 hover:bg-black/70 z-20"
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-white hover:text-gray-300 transition-colors duration-200 bg-black/50 rounded-full p-3 hover:bg-black/70 z-20"
             >
-              <ChevronLeft size={24} />
+              <ChevronLeft size={20} />
             </button>
             <button
               onClick={() => navigateLightbox("next")}
-              className="absolute right-0 top-1/2 -translate-y-1/2 text-white hover:text-gray-300 transition-colors duration-300 bg-black/50 rounded-full p-3 hover:bg-black/70 z-20"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:text-gray-300 transition-colors duration-200 bg-black/50 rounded-full p-3 hover:bg-black/70 z-20"
             >
-              <ChevronRight size={24} />
+              <ChevronRight size={20} />
             </button>
 
-            {/* Polaroid Frame */}
-            <div className="bg-white border border-gray-200 shadow-lg w-full p-4 pb-12 mx-auto">
+            {/* Image Container */}
+            <div className="bg-white p-8 mx-auto max-w-2xl">
               <img
                 src={imageURLs[selectedImage.id]}
                 alt={selectedImage.title}
-                className="block w-full h-auto max-h-[60vh] object-contain"
+                className="w-full h-auto max-h-[70vh] object-contain"
               />
             </div>
-          </div>
 
-          {/* Like Button & Count Below Lightbox */}
-          <div className="mt-4 w-full max-w-md">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
+            {/* Image Info */}
+            <div className="mt-6 text-center">
+              <h2 className="text-white text-xl font-medium mb-2">
+                {selectedImage.title || `Design #${selectedImage.id}`}
+              </h2>
+              <p className="text-gray-300 text-sm mb-4">
+                {selectedImage.description}
+              </p>
+              <div className="flex items-center justify-center">
                 <button
                   onClick={(e) => handleHeartClick(selectedImage.id, e)}
-                  className={`p-2 rounded-full transition-colors duration-300 ${
+                  className={`flex items-center space-x-2 px-4 py-2 rounded transition-colors duration-200 ${
                     favorites.has(selectedImage.id)
-                      ? "bg-red-500 text-white"
-                      : "bg-white/20 text-white hover:bg-white/30"
+                      ? "bg-white text-black"
+                      : "bg-white/20 text-white hover:bg-white hover:text-black"
                   }`}
                 >
                   <Heart
                     size={16}
-                    fill={
-                      favorites.has(selectedImage.id) ? "currentColor" : "none"
-                    }
+                    fill={favorites.has(selectedImage.id) ? "currentColor" : "none"}
                   />
+                  <span className="text-sm font-medium">
+                    {(likesMap[selectedImage.id] ?? 0)}
+                  </span>
                 </button>
-                <span className="text-white font-medium text-sm">
-                  {(likesMap[selectedImage.id] ?? 0).toLocaleString()}{" "}
-                  {likesMap[selectedImage.id] === 1 ? "like" : "likes"}
-                </span>
               </div>
             </div>
           </div>
@@ -507,14 +470,14 @@ export default function Designs() {
         @keyframes fadeInUp {
           from {
             opacity: 0;
-            transform: translateY(30px);
+            transform: translateY(20px);
           }
           to {
             opacity: 1;
             transform: translateY(0);
           }
         }
-
+        
         @keyframes shimmer {
           0% {
             transform: translateX(-100%);
@@ -523,18 +486,9 @@ export default function Designs() {
             transform: translateX(100%);
           }
         }
-
+        
         .animate-shimmer {
           animation: shimmer 2s infinite;
-        }
-
-        .scrollbar-hide {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-
-        .scrollbar-hide::-webkit-scrollbar {
-          display: none;
         }
       `}</style>
     </div>

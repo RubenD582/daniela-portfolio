@@ -1,73 +1,117 @@
-import React, { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Link } from 'react-router-dom';
-import { ArrowRight, Plus } from 'lucide-react';
-import TiltCard from '../components/TiltCard';
-import service1 from '../assets/service1.jpg';
-import service2 from '../assets/service2.jpg';
-import service3 from '../assets/service3.jpg';
-import background from '../assets/background.png';
-import AOS from 'aos';
-import aboutme from '../assets/aboutme2.png';
-import 'aos/dist/aos.css';
+import React, { useEffect, useState, useRef } from 'react';
+import { ArrowRight, Star, Calendar, Phone, Mail, Instagram, MapPin, Clock, Shield, Sparkles, Award, Users, Heart } from 'lucide-react';
+import { BrowserRouter as Router, NavLink } from 'react-router-dom';
+import { scrollToElement } from '../components/scrollUtils';
+import { useNavigate } from 'react-router-dom';
+import StatItem from '../components/Stats';
+import GalleryPreview from './GalleryPreview';
+import ContactSection from './Contact';
+import heroImage from '../assets/image.jpg';
 
 export const faqs = [
   {
-    question: 'How long do press-on nails last?',
+    question: 'How long do gel nails last?',
     answer:
-      'With proper application and care, our premium press-on nails typically last 1-3 weeks. The longevity depends on your daily activities, nail prep, and how well you follow the aftercare instructions. Office workers often get 2-3 weeks, while those with hands-on jobs may get 1-2 weeks.',
+      'Gel nails typically last 2-4 weeks with proper care. The longevity depends on your lifestyle, nail growth rate, and aftercare routine. Most clients book touch-ups every 3 weeks to maintain that fresh, salon-perfect look.',
   },
   {
-    question: 'Will press-on nails damage my natural nails?',
+    question: 'What\'s the difference between gel and regular polish?',
     answer:
-      'Not at all! When applied and removed correctly, press-on nails are actually gentler than gel or acrylic extensions. Our nails use high-quality, non-toxic adhesive that bonds safely without drilling or filing your natural nails. Always follow proper removal techniques to maintain nail health.',
+      'Gel polish is cured under UV/LED light, making it chip-resistant and long-lasting for weeks. Regular polish air-dries and typically lasts 3-7 days. Gel provides a glossy, durable finish that maintains its shine throughout wear.',
   },
   {
-    question: 'How do I apply press-on nails properly?',
+    question: 'How should I prepare for my nail appointment?',
     answer:
-      'Clean and push back cuticles, buff nail surface lightly, wipe with alcohol, select correct sizes, apply thin layer of glue, press firmly for 10-15 seconds, and file to desired shape. I provide detailed instructions and video tutorials with every purchase to ensure perfect application.',
+      'Remove any existing polish, keep your cuticles moisturized, and avoid cutting your nails too short beforehand. If you have design inspiration, bring photos! Also, let me know about any allergies or sensitivities during booking.',
   },
   {
-    question: 'Can I reuse press-on nails?',
+    question: 'Can you work on damaged or weak nails?',
     answer:
-      'Yes! High-quality press-on nails can often be reused 2-3 times if removed carefully and stored properly. Gently file off old glue residue, clean with alcohol, and reapply with fresh adhesive. This makes them incredibly cost-effective compared to salon visits.',
+      'Absolutely! I specialize in nail rehabilitation and strengthening treatments. We can build up weak spots, repair breaks, and use strengthening base coats to improve your natural nail health while creating beautiful manicures.',
   },
   {
-    question: 'What if a nail pops off early?',
+    question: 'How do I make my manicure last longer?',
     answer:
-      'If a nail comes off within the first few days, it\'s usually due to oil residue, incorrect sizing, or insufficient pressure during application. Clean both the nail and your natural nail with alcohol, reapply with a thin layer of glue, and press firmly. I\'m always available to troubleshoot any issues!',
+      'Wear gloves when cleaning, use cuticle oil daily, avoid using nails as tools, and book regular touch-ups. I\'ll provide specific aftercare instructions and recommend products to extend your manicure\'s lifespan.',
   },
   {
-    question: 'How do I remove press-on nails safely?',
+    question: 'Do you offer nail art and custom designs?',
     answer:
-      'Soak your nails in warm soapy water for 10-15 minutes, then gently lift from the sides using a cuticle pusher. Never force or peel them off! For stubborn nails, use acetone or nail glue remover around the edges. Take your time to preserve both the press-ons and your natural nails.',
+      'Yes! I love creating unique nail art, from simple accent nails to intricate hand-painted designs. Whether you want seasonal themes, special occasion nails, or personalized artwork, we can bring your vision to life.',
   },
   {
-    question: 'Can I do household tasks with press-on nails?',
+    question: 'How often should I get my nails done?',
     answer:
-      'Absolutely! Press-on nails are designed for everyday life. You can type, cook, clean, and exercise normally. Just treat them like you would natural long nails - use your fingertips rather than nails for opening things, wear gloves for cleaning, and avoid using them as tools.',
+      'Most clients visit every 2-4 weeks depending on the service. Gel manicures typically need refreshing every 3 weeks, while maintenance appointments for nail health can be monthly. I\'ll recommend the best schedule for your lifestyle and nail goals.',
   },
   {
-    question: 'Do you offer custom designs and sizes?',
+    question: 'What if I have an allergic reaction to products?',
     answer:
-      'Yes! I specialize in custom designs tailored to your style, occasion, and nail shape. Whether you want subtle elegance for work, bold art for events, or seasonal themes, I can create your perfect set. I also offer custom sizing for the most comfortable fit possible.',
+      'Your safety is my priority! I use high-quality, professional products and can perform patch tests for sensitive clients. If you have known allergies, please inform me during booking so I can select appropriate hypoallergenic alternatives.',
   },
   {
-    question: 'How much do press-on nail sets cost?',
+    question: 'Can I bring my own nail polish?',
     answer:
-      'Prices vary based on design complexity and customization. Basic sets start around R150-250, while intricate custom designs range from R300-500. This includes the full set, application kit, and aftercare instructions. It\'s a fraction of salon costs with salon-quality results!',
+      'While I stock professional-grade polishes in many colors, you\'re welcome to bring your own special shades! Just ensure they\'re compatible with professional application techniques for the best results.',
   },
   {
-    question: 'What\'s the difference between your nails and store-bought ones?',
+    question: 'What are your prices for different services?',
     answer:
-      'My press-on nails use premium materials, hand-painted details, and professional-grade adhesive. Each set is carefully crafted with attention to shape, thickness, and durability. Unlike mass-produced options, mine offer custom sizing, unique designs, and personalized service with ongoing support.',
+      'Prices vary by service: basic manicures start around R200-300, gel manicures R350-450, and nail art R450-600+ depending on complexity. I offer package deals for regular clients and seasonal promotions. Contact me for a detailed price list!',
+  },
+  {
+    question: 'How do I book an appointment?',
+    answer:
+      'You can book through my website, WhatsApp, or call directly. I recommend booking 1-2 weeks in advance, especially for weekends and special occasions. Cancellations require 24-hour notice to avoid fees.',
+  },
+  {
+    question: 'Do you offer mobile nail services?',
+    answer:
+      'Yes! I provide mobile services for special events, bridal parties, or clients who prefer the convenience of home appointments. Mobile service includes a small travel fee depending on location within my service area.',
   },
 ];
 
 export default function Home() {
   const [openIndex, setOpenIndex] = useState(null);
+  const [isVisible, setIsVisible] = useState({});
+  const testimonialsRef = useRef(null);
+  const navigate = useNavigate();
+  
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setIsVisible(prev => ({ ...prev, [entry.target.id]: true }));
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    document.querySelectorAll('[id]').forEach((el) => {
+      observer.observe(el);
+    });
+
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
-    AOS.init({ duration: 1000 });
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(v => ({ ...v, testimonials: true }));
+          observer.unobserve(entry.target);
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (testimonialsRef.current) {
+      observer.observe(testimonialsRef.current);
+    }
+
+    return () => observer.disconnect();
   }, []);
 
   const toggleFAQ = (index) => {
@@ -75,258 +119,316 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-white font-sans">
-      {/* Hero Section */}
-      <div
-        className="relative bg-[#F3BAB1]"
-        style={{
-          backgroundImage: `url(${background})`,
-          backgroundRepeat: 'repeat',
-          backgroundSize: '300px',
-          backgroundPosition: 'center',
-          backgroundBlendMode: 'color-burn',
-          zIndex: 0,
-        }}
-        data-aos="fade-in"
+    <div className="min-h-screen bg-white">
+      {/* Hero Section with Enhanced Feminine Animations */}
+      <section
+        id="hero"
+        className="relative h-[100vh] mt-18 flex items-center justify-center overflow-hidden bg-[#F8F8F8]"
       >
-        <div className="relative z-[10]">
-          <div className="max-w-6xl mx-auto px-6 py-24 md:px-4">
-            <div className="text-center">
-              <h1 className="text-4xl md:text-[50px] font-bodoni-moda mb-5 md:mb-5 text-white">
-                Modern Nail Artistry
-              </h1>
-              <p className="mb-14 max-w-2xl mx-auto text-[14px] md:text-sm font-montserrat font-thin text-white">
-                Discover premium, stylish press-on nails by Press Ons by Dani for every occasion.
-              </p>
-              <a
-                href="https://wa.me/27661043677"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <button
-                  className="group inline-flex items-center bg-[#FFFFFF10] border-[1px] border-white text-white font-thin px-8 py-3 hover:bg-[#FFFFFF40] transition-all duration-300"
-                  style={{
-                    backdropFilter: 'blur(8px)',
-                    WebkitBackdropFilter: 'blur(8px)', // for Safari
-                  }}
-                >
-                  Book Session
-                  <ArrowRight
-                    className="ml-2 transition-transform duration-300 group-hover:translate-x-3"
-                    size={14}
-                  />
-                </button>
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Services Preview - Enhanced */}
-      <div className="max-w-7xl mx-auto px-6 py-20" data-aos="fade-up">
-        <h2 className="text-3xl font-bodoni-moda text-center text-gray-900 mb-12">
-          Signature Services
-        </h2>
-        
-        <div className="grid md:grid-cols-3 gap-10">
-          {[
-            {
-              title: 'Effortless Elegance',
-              description: 'Transform your look in minutes with our easy-to-apply press-on nails designed for the modern woman.',
-              image: service1,
-            },
-            {
-              title: 'Salon-Quality at Home',
-              description: 'Experience professional results without the salon visit—premium nails with lasting beauty, instantly.',
-              image: service2,
-            },
-            {
-              title: 'Modern Nail Art',
-              description: 'Subtle elegance meets contemporary design with our curated collection of artistic nail sets.',
-              image: service3,
-            },
-          ].map((service, idx) => (
-            <div
-              key={service.title}
-              className="group bg-white p-8 border border-gray-100 hover:border-gray-200 transition-all duration-500 hover:-translate-y-2 relative overflow-hidden"
-              data-aos="fade-up"
-              data-aos-delay={idx * 100}
+        <div className="relative z-10 text-center px-6 max-w-4xl w-full">
+          <div
+            className={`transition-all duration-[750ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] ${
+              isVisible.hero ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'
+            }`}
+          >
+            {/* Professional Badge with Gentle Float */}
+            <div 
+              className={`inline-flex items-center bg-black text-white px-4 py-2 mb-10 transition-all duration-[1000ms] ease-[cubic-bezier(0.23,1,0.32,1)] ${
+                isVisible.hero ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-8 scale-95'
+              }`}
+              style={{
+                transitionDelay: isVisible.hero ? '100ms' : '0ms'
+              }}
             >
-              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-gray-200 to-gray-200 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></div>
-              <div className="relative">
-                <img
-                  src={service.image}
-                  alt={service.title}
-                  className="h-72 w-full object-cover mb-6 border border-gray-100 group-hover:scale-105 transition-transform duration-500"
-                />
-                <h3 className="text-xl text-gray-900 mb-1 text-[16px]">
-                  {service.title}
-                </h3>
-                <p className="text-gray-500 text-[12px] font-montserrat font-thin">
-                  {service.description}
-                </p>
-              </div>
+              <span className="text-xs font-light uppercase tracking-widest">Certified Nail Technician</span>
             </div>
-          ))}
-        </div>
-      </div>
 
-      {/* About Section */}
-      <div className="bg-[#F3BAB1] border-t border-b" data-aos="fade-up"
-				style={{
-					backgroundImage: 'url(`${background}`)',
-					backgroundRepeat: 'repeat',
-					backgroundSize: '300px',
-					backgroundPosition: 'center',
-					backgroundBlendMode: 'color-burn',
-					zIndex: 0,
-				}}
-			>
-        <div className='z-[10]'>
-					<div className="max-w-6xl mx-auto px-4 py-14 md:flex items-center gap-12">
-						<div className="md:w-1/2 mb-20 md:mb-0">
-							<img
-								src={aboutme}
-								alt={"aboutme"}
-								className="w-[400px] object-cover mb-4"
-							/>
-						</div>
-						<div className="md:w-1/2 text-center md:text-left">
-							<h2 className="text-4xl font-bodoni-moda mb-6 mt-0 md:mt-[50px] text-white" data-aos="fade-up">
-								What Makes Me Different?
-							</h2>
-							<p className="mb-6 leading-relaxed text-sm font-montserrat font-thin text-white" data-aos="fade-up">
-								My passion for nail design sets me apart—each nail is a canvas for creativity and self-expression. I combine modern techniques with innovative artistry to craft designs that are as unique as you are, using only premium, non-toxic products. This commitment to clean, conscious beauty ensures that every detail is meticulously curated, resulting in nail art that is both striking and enduring.
-							</p>
-						</div>
-
-					</div>
-				</div>
-      </div>
-
-      {/* Testimonials */}
-      <div className="max-w-6xl mx-auto px-4 py-16" data-aos="fade-up">
-        <h2 className="text-3xl font-bodoni-moda text-center text-gray-900 mb-12">
-          Testimonials
-        </h2>
-        <div className="flex flex-col md:flex-row gap-8 justify-center">
-          <div
-            className="bg-white shadow-lg rounded-lg p-8 max-w-md border border-gray-200"
-            data-aos="fade-up"
-          >
-            <div className="text-6xl font-bodoni-moda text-gray-300">"</div>
-            <p className="text-sm italic text-gray-600">
-              "Daniela's artistry in nail design is truly inspiring. Every detail reflects her passion
-              and innovative approach, leaving me feeling confident and uniquely styled. I highly
-              recommend her exceptional work."
-              <br />
-              <br />— Ruben
-            </p>
-          </div>
-          <div
-            className="bg-white shadow-lg rounded-lg p-8 max-w-md border border-gray-200"
-            data-aos="fade-up"
-            data-aos-delay="200"
-          >
-            <div className="text-6xl font-bodoni-moda text-gray-300">"</div>
-            <p className="text-sm italic text-gray-600">
-              "I was amazed by the intricate designs and attention to detail. Daniela transformed my
-              nails into a work of art that I proudly showcase every day."
-              <br />
-              <br />— Sophia
-            </p>
-          </div>
-          <div
-            className="bg-white shadow-lg rounded-lg p-8 max-w-md border border-gray-200"
-            data-aos="fade-up"
-            data-aos-delay="400"
-          >
-            <div className="text-6xl font-bodoni-moda text-gray-300">"</div>
-            <p className="text-sm italic text-gray-600">
-              "From start to finish, my experience was top-notch. Daniela's creativity and
-              professionalism made me feel like a star."
-              <br />
-              <br />— James
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* FAQ Section - Fixed mobile cutoff */}
-      <div className="max-w-4xl mx-auto px-6 py-16" data-aos="fade-up">
-        <h2 className="text-3xl font-bodoni-moda text-center text-gray-900 mb-12">
-          Frequently Asked Questions
-        </h2>
-
-        <div className="space-y-4">
-          {faqs.map((item, index) => {
-            const isOpen = openIndex === index;
-            return (
-              <div
-                key={index}
-                className="w-full bg-white border border-gray-200 overflow-hidden transition-all duration-200 ease-in-out"
+            {/* Animated Title with Staggered, Flowing Effect */}
+            <h1
+              className={`text-4xl md:text-7xl font-extralight text-stone-900 mb-6 tracking-tight leading-tight font-bodoni-moda transition-all duration-[1300ms] ease-[cubic-bezier(0.165,0.84,0.44,1)] ${
+                isVisible.hero
+                  ? 'opacity-100 translate-y-0 scale-100'
+                  : 'opacity-0 translate-y-20 scale-98'
+              }`}
+              style={{
+                transitionDelay: isVisible.hero ? '200ms' : '0ms'
+              }}
+            >
+              DANIELA <span>ALVES</span>
+              <span
+                className={`block text-stone-900 transition-all duration-[1500ms] ease-[cubic-bezier(0.19,1,0.22,1)] ${
+                  isVisible.hero
+                    ? 'opacity-100 translate-y-0 scale-100'
+                    : 'opacity-0 translate-y-24 scale-97'
+                }`}
+                style={{
+                  transitionDelay: isVisible.hero ? '100ms' : '0ms'
+                }}
               >
-                {/* Question Row */}
-                <button
-                  onClick={() => toggleFAQ(index)}
-                  className="w-full flex justify-between items-center p-8 transition-colors duration-200"
-                >
-                  <span className="font-bodoni-moda text-xl text-gray-900 text-left">
-                    {item.question}
-                  </span>
-                  <Plus
-                    size={24}
-                    className={`text-black transition-transform duration-200 ease-in-out flex-shrink-0 ml-4 ${
-                      isOpen ? 'rotate-45' : ''
-                    }`}
-                  />
-                </button>
+                NAIL <span className='text-[#CFB53B]'>TECHNICIAN</span>
+              </span>
+            </h1>
 
-                {/* Answer Section with dynamic height */}
-                <div
-                  className={`transition-all duration-300 ease-in-out ${
-                    isOpen 
-                      ? 'opacity-100 translate-y-0' 
-                      : 'opacity-0 -translate-y-2 pointer-events-none'
-                  }`}
-                  style={{
-                    maxHeight: isOpen ? 'fit-content' : '0px',
-                    overflow: isOpen ? 'visible' : 'hidden'
-                  }}
-                >
-                  <div className="px-8 pb-8">
-                    <p className="text-gray-600/70 font-montserrat leading-relaxed text-sm">
-                      {item.answer}
-                    </p>
+            {/* Description with Soft Fade-in */}
+            <p
+              className={`text-sm md:text-md text-stone-600 mb-12 max-w-4xl mx-auto leading-relaxed mt-10 transition-all duration-[1200ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] ${
+                isVisible.hero
+                  ? 'opacity-100 translate-y-0'
+                  : 'opacity-0 translate-y-16'
+              }`}
+              style={{
+                transitionDelay: isVisible.hero ? '200ms' : '0ms'
+              }}
+            >
+              Precision-crafted press-on nails and bespoke manicure services.
+              Where technical excellence meets artistic vision for the modern professional.
+            </p>
+
+            {/* Call-to-Action Buttons with Graceful Entrance */}
+            <div
+              className={`flex flex-col sm:flex-row gap-4 justify-center items-center mt-16 transition-all duration-[1000ms] ease-[cubic-bezier(0.23,1,0.32,1)] ${
+                isVisible.hero
+                  ? 'opacity-100 translate-y-0 scale-100'
+                  : 'opacity-0 translate-y-12 scale-96'
+              }`}
+              style={{
+                transitionDelay: isVisible.hero ? '600ms' : '0ms'
+              }}
+            >
+              <button
+                onClick={() => scrollToElement('contact', 1500)}
+                className="group bg-stone-900 text-white px-8 py-4 text-sm font-light hover:bg-stone-800 transition-all duration-[400ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] flex items-center justify-center transform hover:-translate-y-0.5 w-56"
+              >
+                <span>Book Appointment</span>
+                <ArrowRight className="ml-2 w-4 h-4 transition-transform duration-[400ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)]" />
+              </button>
+
+              <button className="group bg-transparent text-stone-600 hover:text-stone-900 transition-all duration-[400ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] text-sm font-light px-8 py-4 border border-stone-200 hover:border-stone-300 transform hover:-translate-y-0.5 w-56 flex items-center justify-center">
+                <span>View Nail Gallery</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Services Section */}
+      <section id="services" className="py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className={`text-center mb-20 transition-all duration-1000 ${isVisible.services ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+            <h2 className="text-4xl md:text-5xl font-extralight text-stone-900 mb-6">
+              Professional Nail Services
+            </h2>
+            <p className="text-stone-600 font-light max-w-2xl mx-auto text-lg">
+              Expert nail care and artistry with premium products and meticulous attention to detail.
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-12">
+            {[
+              {
+                title: 'Gel & Acrylic Overlays',
+                description: 'Professional overlays on your natural nails for strength and beauty.',
+                price: 'From R160',
+              },
+              {
+                title: 'Extensions & Sculptures',
+                description: 'Create length and shape with our expert extension services.',
+                price: 'From R210',
+              },
+              {
+                title: 'Nail Art & Services',
+                description: 'Custom nail art, fills, repairs, and maintenance services.',
+                price: 'From R5',
+              }
+            ].map((service, idx) => (
+              <div
+                key={idx}
+                className={`group bg-white p-8 cursor-pointer hover:-translate-y-2 transition-all duration-500 relative ${
+                  idx === 1 
+                    ? 'border border-black' 
+                    : 'border border-stone-100 hover:border-black'
+                } ${isVisible.services ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+                style={{ transitionDelay: `${idx * 200}ms` }}
+              >
+                {idx === 1 && (
+                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                    <span className="bg-black text-white px-4 py-1 text-xs font-medium">
+                      MOST POPULAR
+                    </span>
                   </div>
+                )}
+                <h3 className="text-lg font-light text-stone-900 mb-3 uppercase">{service.title}</h3>
+                <p className="text-stone-600 font-light text-sm mb-6 leading-relaxed">{service.description}</p>
+                <div className="flex justify-between items-center">
+                  <span className="text-stone-900 font-medium">{service.price}</span>
+                  <button className="text-stone-600 hover:text-stone-900 transition-colors text-sm">
+                    Book Now →
+                  </button>
                 </div>
               </div>
-            );
-          })}
+            ))}
+          </div>
+
+          {/* View More Button */}
+          <div className="text-center mt-12">
+            <button 
+              className="bg-stone-900 text-white px-8 py-3 hover:bg-stone-800 transition-colors duration-300 font-light"
+              onClick={() => navigate('services')}
+            >
+              View All Services
+            </button>
+          </div>
         </div>
-      </div>
+      </section>
+
+      {/* About Section */}
+      {/* <section id="about" className="py-24 bg-gradient-to-br from-stone-50 to-white">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <div className={`transition-all duration-1000 ${isVisible.about ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-8'}`}>
+              <div className="aspect-[4/5] bg-stone-200 overflow-hidden">
+                <div className="w-full h-full bg-gradient-to-br from-stone-300 to-stone-100 flex items-center justify-center">
+                  <span className="text-stone-500 font-light">Photo</span>
+                </div>
+              </div>
+            </div>
+            
+            <div className={`transition-all duration-1000 ${isVisible.about ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-8'}`}>
+              <h2 className="text-4xl md:text-5xl font-extralight text-stone-900 mb-8">
+                The Artist Behind
+                <span className="block text-stone-600">the Craft</span>
+              </h2>
+              
+              <p className="text-stone-600 font-light mb-6 text-md leading-relaxed font-montserrat">
+                With a year of dedicated experience in nail artistry, I've transformed my passion for beauty into a craft that celebrates individuality and self-expression.
+              </p>
+              
+              <p className="text-stone-600 font-light mb-6 text-md leading-relaxed font-montserrat">
+                Each set I create is more than just nails—it's a reflection of your personality, a boost to your confidence, and a testament to the artistry that happens when creativity meets precision.
+              </p>
+
+              <div className="grid grid-cols-2 gap-6 mb-8 mt-12">
+                {[
+                  { icon: <Shield className="w-5 h-5" />, text: 'Premium Materials' },
+                  { icon: <Users className="w-5 h-5" />, text: '50+ Happy Clients' },
+                  { icon: <Award className="w-5 h-5" />, text: 'Certified Professional' },
+                  { icon: <Clock className="w-5 h-5" />, text: '2+ Years Experience' }
+                ].map((item, idx) => (
+                  <div key={idx} className="flex items-center space-x-3">
+                    <div className="text-stone-600">{item.icon}</div>
+                    <span className="text-stone-600 font-light text-sm">{item.text}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section> */}
+
+      <GalleryPreview isVisible={isVisible} />
+
+      {/* Testimonials */}
+      <section ref={testimonialsRef} id="testimonials" className="py-24 bg-gradient-to-br from-stone-50 to-white">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className={`text-center mb-20 transition-all duration-1000 ${isVisible.testimonials ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+            <h2 className="text-4xl md:text-5xl font-extralight text-stone-900 mb-6">
+              Client Stories
+            </h2>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              {
+                name: 'Ruben',
+                text: "Daniela's artistry in nail design is truly inspiring. Every detail reflects her passion and innovative approach, leaving me feeling confident and uniquely styled."
+              },
+              {
+                name: 'Sophia',
+                text: "I was amazed by the intricate designs and attention to detail. Daniela transformed my nails into a work of art that I proudly showcase every day."
+              },
+              {
+                name: 'James',
+                text: "From start to finish, my experience was top-notch. Daniela's creativity and professionalism made me feel like a star."
+              }
+            ].map((testimonial, idx) => (
+              <div
+                key={idx}
+                className={`bg-white p-8 border border-stone-100 transition-all duration-1000 ${isVisible.testimonials ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+                style={{ transitionDelay: `${idx * 200}ms` }}
+              >
+                <div className="flex mb-4">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                  ))}
+                </div>
+                <p className="text-stone-600 font-light text-sm mb-6 leading-relaxed italic">
+                  "{testimonial.text}"
+                </p>
+                <div className="text-stone-900 font-light text-sm">— {testimonial.name}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="py-24 bg-white" id="faq">
+        <div className="max-w-4xl mx-auto px-6">
+          <div className={`text-center mb-20 transition-all duration-1000 ${isVisible.faq ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+            <h2 className="text-4xl md:text-5xl font-extralight text-stone-900 mb-6">
+              Frequently Asked
+            </h2>
+          </div>
+
+          <div id="faq" className="space-y-2">
+            {faqs.map((item, index) => {
+              const isOpen = openIndex === index;
+              return (
+                <div
+                  key={index}
+                  className={`bg-white border border-stone-100 overflow-hidden transition-all duration-1000 ${isVisible.faq ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+                  style={{ transitionDelay: `${index * 100}ms` }}
+                >
+                  <button
+                    onClick={() => toggleFAQ(index)}
+                    className="w-full flex justify-between items-center p-8 text-left hover:bg-stone-50 transition-colors"
+                  >
+                    <span className="text-stone-900 font-light text-lg">{item.question}</span>
+                    <div className={`w-6 h-6 flex items-center justify-center transition-transform duration-300 ${isOpen ? 'rotate-45' : ''}`}>
+                      <div className="w-4 h-px bg-stone-400"></div>
+                      <div className="w-px h-4 bg-stone-400 absolute"></div>
+                    </div>
+                  </button>
+                  
+                  <div className={`overflow-hidden transition-all duration-300 ${isOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}>
+                    <div className="px-8 pb-8">
+                      <p className="text-stone-600 font-light leading-relaxed font-montserrat font-xs">
+                        {item.answer}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      <ContactSection />
 
       {/* Footer */}
-      <footer>
-        <div className="max-w-6xl mx-auto px-4 py-12">
-          <div className="text-center">
-            <p className="font-dancing-script text-2xl mb-4 text-gray-900">
+      <footer className="py-12 bg-stone-950 text-stone-400">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex flex-col md:flex-row justify-between items-center">
+            <div 
+              className="text-2xl font-dancing-script text-white font-thin cursor-pointer"
+              onClick={() => scrollToElement('hero', 1500)}
+            >
               Daniela Alves
-            </p>
-            <div className="flex justify-center space-x-6 mb-4">
-              {['Instagram', 'Pinterest', 'TikTok'].map((social) => (
-                <a
-                  key={social}
-                  href="/"
-                  className="text-gray-500 hover:text-gray-700"
-                >
-                  {social}
-                </a>
-              ))}
             </div>
-            <p className="text-sm text-gray-400">
+            <div className="text-sm font-light">
               &copy; {new Date().getFullYear()} Daniela Alves. All rights reserved.
-            </p>
+            </div>
           </div>
         </div>
       </footer>

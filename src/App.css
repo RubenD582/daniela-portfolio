@@ -21,3 +21,7 @@ body {
     padding: 0px;
   }
 }
+
+html {
+  scroll-behavior: smooth;
+}
