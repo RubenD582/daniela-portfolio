@@ -133,7 +133,7 @@ export default function Home() {
           >
             {/* Professional Badge */}
             <div className="inline-flex items-center mb-6 px-4 py-2 bg-white/80">
-              <div className="w-2 h-2 bg-[#CFB53B] rounded-full mr-3 animate-pulse"></div>
+              {/* <div className="w-2 h-2 bg-[#CFB53B] rounded-full mr-3 animate-pulse"></div> */}
               <p className="text-xs text-gray-600 font-medium uppercase tracking-widest">
                 Certified Nail Technician
               </p>
@@ -193,13 +193,13 @@ export default function Home() {
             >
               <button
                 onClick={() => scrollToElement('contact', 1500)}
-                className="group relative bg-neutral-900 text-white px-8 py-4 text-sm font-medium uppercase tracking-wider hover:bg-neutral-800 transition-all duration-[400ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] flex items-center justify-center hover:shadow-xl transform hover:-translate-y-1 overflow-hidden"
+                className="group relative bg-neutral-900 text-white px-14 py-4 text-sm font-medium uppercase tracking-wider hover:bg-neutral-800 transition-all duration-[400ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] flex items-center justify-center hover:shadow-xl transform hover:-translate-y-1 overflow-hidden"
               >
                 <div className="absolute inset-0 transform translate-x-full transition-transform duration-300 group-hover:translate-x-0"></div>
                 <span className="relative z-10">Book Now</span>
                 <ArrowRight className="ml-3 w-4 h-4 transition-all duration-[400ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] group-hover:translate-x-1" />
               </button>
-              <button className="group relative text-neutral-700 hover:text-neutral-900 transition-all duration-[400ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] text-sm font-medium uppercase tracking-wider px-8 py-4 border border-neutral-200 hover:border-neutral-400 hover:shadow-lg transform hover:-translate-y-1 flex items-center justify-center overflow-hidden backdrop-blur-sm">
+              <button className="group relative text-neutral-700 hover:text-neutral-900 transition-all duration-[400ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] text-sm font-medium uppercase tracking-wider px-14 py-4 border border-neutral-200 hover:border-neutral-400 hover:shadow-lg transform hover:-translate-y-1 flex items-center justify-center overflow-hidden backdrop-blur-sm">
                 <span className="relative z-10 flex items-center">
                   {/* <div className="mr-2 w-1 h-1 bg-[#CFB53B] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div> */}
                   View Gallery
