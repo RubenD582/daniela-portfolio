@@ -158,7 +158,7 @@ export default function Navbar() {
               FAQ
             </button>
             <button
-              onClick={() => handleScrollToSection('contact')}
+              onClick={() => handleScrollToSection('book-form')}
               className="text-stone-600 hover:text-stone-900 transition-colors text-sm font-light uppercase"
             >
               Contact
@@ -255,7 +255,7 @@ export default function Navbar() {
                 </button>
 
                 <button
-                  onClick={() => handleMobileNavClick(() => handleScrollToSection('contact'))}
+                  onClick={() => handleMobileNavClick(() => handleScrollToSection('book-form'))}
                   className="flex items-center w-full px-6 py-3 text-left text-stone-700 hover:text-stone-900 hover:bg-stone-50 transition-colors group"
                 >
                   <span className="font-medium uppercase">Contact</span>

@@ -122,7 +122,7 @@ const ContactSection = () => {
             </div>
           </div>
 
-          <div className="bg-white border border-gray-200 shadow-sm p-8">
+          <div id="book-form" className="bg-white border border-gray-200 shadow-sm p-8">
             <h3 className="text-2xl font-light mb-8 text-gray-900">BOOK CONSULTATION</h3>
             
             {status && (

@@ -73,93 +73,71 @@ export const faqs = [
 
 export default function Home() {
   const [openIndex, setOpenIndex] = useState(null);
-  const [isVisible, setIsVisible] = useState({});
-  const testimonialsRef = useRef(null);
+  const [animatedSections, setAnimatedSections] = useState(new Set());
   const navigate = useNavigate();
   
+  // Simple scroll-based animation
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setIsVisible(prev => ({ ...prev, [entry.target.id]: true }));
+    const handleScroll = () => {
+      const sections = ['services', 'testimonials', 'faq'];
+      
+      sections.forEach(sectionId => {
+        const element = document.getElementById(sectionId);
+        if (element && !animatedSections.has(sectionId)) {
+          const rect = element.getBoundingClientRect();
+          // Changed from 0.8 to 0.6 so animations trigger when 60% of viewport shows the section
+          const isVisible = rect.top < window.innerHeight * 0.6;
+          
+          if (isVisible) {
+            setAnimatedSections(prev => new Set([...prev, sectionId]));
           }
-        });
-      },
-      { threshold: 0.1 }
-    );
-
-    document.querySelectorAll('[id]').forEach((el) => {
-      observer.observe(el);
-    });
-
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(v => ({ ...v, testimonials: true }));
-          observer.unobserve(entry.target);
         }
-      },
-      { threshold: 0.1 }
-    );
+      });
+    };
 
-    if (testimonialsRef.current) {
-      observer.observe(testimonialsRef.current);
-    }
-
-    return () => observer.disconnect();
-  }, []);
+    // Check on mount
+    handleScroll();
+    
+    // Check on scroll
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [animatedSections]);
 
   const toggleFAQ = (index) => {
     setOpenIndex(prev => (prev === index ? null : index));
   };
 
+  const isVisible = (sectionId) => animatedSections.has(sectionId);
+
+  // Create visibility object for components that expect the old format
+  const visibilityObject = {
+    services: isVisible('services'),
+    testimonials: isVisible('testimonials'),
+    faq: isVisible('faq'),
+    gallery: isVisible('services'), // Assuming gallery should show when services is visible
+    about: isVisible('services') // If there's an about section
+  };
+
   return (
     <div className="min-h-screen bg-white">
-      {/* Enhanced Professional Minimal Hero Section */}
+      {/* Hero Section - Always visible */}
       <section
         id="hero"
         className="relative h-screen flex items-center justify-center overflow-hidden bg-white"
       >
         <div className="relative z-10 text-center px-6 max-w-5xl w-full">
-          <div
-            className={`transition-all duration-[750ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] ${
-              isVisible.hero ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'
-            }`}
-          >
+          <div className="animate-fade-in-up">
             {/* Professional Badge */}
             <div className="inline-flex items-center mb-6 px-4 py-2 bg-white/80">
-              {/* <div className="w-2 h-2 bg-[#CFB53B] rounded-full mr-3 animate-pulse"></div> */}
               <p className="text-xs text-gray-600 font-medium uppercase tracking-widest">
                 Certified Nail Technician
               </p>
             </div>
 
-            <h1
-              className={`text-5xl md:text-8xl font-light font-bodoni-moda text-neutral-900 mb-8 tracking-tight leading-[0.85] transition-all duration-[1300ms] ease-[cubic-bezier(0.165,0.84,0.44,1)] ${
-                isVisible.hero
-                  ? 'opacity-100 translate-y-0 scale-100'
-                  : 'opacity-0 translate-y-20 scale-98'
-              }`}
-              style={{
-                transitionDelay: isVisible.hero ? '200ms' : '0ms',
-              }}
-            >
+            <h1 className="text-5xl md:text-8xl font-light font-bodoni-moda text-neutral-900 mb-8 tracking-tight leading-[0.85] animate-fade-in-up-delay-1">
               PRECISION
-              <span
-                className={`block transition-all duration-[1500ms] ease-[cubic-bezier(0.19,1,0.22,1)] mt-3 ${
-                  isVisible.hero
-                    ? 'opacity-100 translate-y-0 scale-100'
-                    : 'opacity-0 translate-y-24 scale-97'
-                }`}
-                style={{
-                  transitionDelay: isVisible.hero ? '100ms' : '0ms'
-                }}
-              >
+              <span className="block mt-3 animate-fade-in-up-delay-2">
                 & <span className="text-[#CFB53B] relative">
                   ELEGANCE
                 </span>
@@ -167,30 +145,12 @@ export default function Home() {
             </h1>
 
             {/* Elegant Tagline */}
-            <p
-              className={`text-sm md:text-lg font-sans text-neutral-600 mb-12 max-w-2xl mx-auto leading-relaxed font-light transition-all duration-[1000ms] ease-[cubic-bezier(0.23,1,0.32,1)] ${
-                isVisible.hero
-                  ? 'opacity-100 translate-y-0'
-                  : 'opacity-0 translate-y-8'
-              }`}
-              style={{
-                transitionDelay: isVisible.hero ? '400ms' : '0ms'
-              }}
-            >
+            <p className="text-sm md:text-lg font-sans text-neutral-600 mb-12 max-w-2xl mx-auto leading-relaxed font-light animate-fade-in-up-delay-3">
               Transforming your nails into works of art with meticulous attention to detail and contemporary elegance.
             </p>
 
-            {/* Call-to-Action Buttons with Enhanced Design */}
-            <div
-              className={`flex flex-col sm:flex-row gap-3 sm:gap-6 mt-14 justify-center items-center transition-all duration-[1000ms] ease-[cubic-bezier(0.23,1,0.32,1)] ${
-                isVisible.hero
-                  ? 'opacity-100 translate-y-0 scale-100'
-                  : 'opacity-0 translate-y-12 scale-96'
-              }`}
-              style={{
-                transitionDelay: isVisible.hero ? '600ms' : '0ms'
-              }}
-            >
+            {/* Call-to-Action Buttons */}
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-6 mt-14 justify-center items-center animate-fade-in-up-delay-4">
               <button
                 onClick={() => scrollToElement('contact', 1500)}
                 className="group relative bg-neutral-900 text-white px-14 py-4 text-sm font-medium uppercase tracking-wider hover:bg-neutral-800 transition-all duration-[400ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] flex items-center justify-center hover:shadow-xl transform hover:-translate-y-1 overflow-hidden"
@@ -201,37 +161,16 @@ export default function Home() {
               </button>
               <button className="group relative text-neutral-700 hover:text-neutral-900 transition-all duration-[400ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] text-sm font-medium uppercase tracking-wider px-14 py-4 border border-neutral-200 hover:border-neutral-400 hover:shadow-lg transform hover:-translate-y-1 flex items-center justify-center overflow-hidden backdrop-blur-sm">
                 <span className="relative z-10 flex items-center">
-                  {/* <div className="mr-2 w-1 h-1 bg-[#CFB53B] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div> */}
                   View Gallery
                 </span>
                 <div className="absolute inset-0 bg-gradient-to-r from-neutral-50/50 to-neutral-100/50 transform translate-x-full transition-transform duration-300 group-hover:translate-x-0"></div>
               </button>
             </div>
-
-            {/* <div
-              className="
-                mt-20
-                w-full
-                grid
-                items-center
-                grid-cols-[1fr_auto_1fr]
-              "
-            >
-              <span className="justify-self-end pr-4 text-xs uppercase tracking-widest text-neutral-500">
-                Great Reviews
-              </span>
-
-              <div className="h-4 w-px bg-neutral-300 justify-self-center"></div>
-
-              <span className="justify-self-start pl-4 text-xs uppercase tracking-widest text-neutral-500">
-                Licensed &amp; Insured
-              </span>
-            </div> */}
           </div>
         </div>
 
         {/* Enhanced Scroll Indicator */}
-        <div className="hidden md:block absolute bottom-8 left-1/2 transform -translate-x-1/2">
+        <div className="hidden md:block absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-fade-in-delay-5">
           <div className="flex flex-col items-center group">
             <span className="text-xs text-neutral-500 mb-3 uppercase tracking-widest group-hover:text-neutral-700 transition-colors duration-300">
               Scroll Down
@@ -249,12 +188,12 @@ export default function Home() {
         <div className="hidden md:block absolute bottom-8 right-8 w-8 h-8 border-r border-b border-neutral-200"></div>
       </section>
 
-      {/* Services Section - Clean, Minimal, Professional */}
+      {/* Services Section */}
       <section id="services" className="py-32 bg-white">
         <div className="max-w-6xl mx-auto px-8">
           
           {/* Header */}
-          <div className={`text-center mb-24 transition-all duration-1000 ${isVisible.services ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+          <div className={`text-center mb-24 transition-all duration-1000 ease-out ${isVisible('services') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}>
             <h2 className="text-5xl md:text-6xl font-extralight text-black mb-8 tracking-tight">
               Professional Services
             </h2>
@@ -291,10 +230,12 @@ export default function Home() {
             ].map((service, idx) => (
               <div
                 key={idx}
-                className={`group bg-white p-12 cursor-pointer hover:-translate-y-2 transition-all duration-300 relative border border-gray-100 hover:border-gray-200 ${
-                  isVisible.services ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+                className={`group bg-white p-12 cursor-pointer hover:-translate-y-2 transition-all duration-700 ease-out relative border border-gray-100 hover:border-gray-200 ${
+                  isVisible('services') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'
                 }`}
-                style={{ transitionDelay: `${idx * 150}ms` }}
+                style={{ 
+                  transitionDelay: isVisible('services') ? `${idx * 150}ms` : '0ms'
+                }}
               >
                 {/* Popular Badge */}
                 {service.popular && (
@@ -340,7 +281,7 @@ export default function Home() {
           </div>
 
           {/* CTA */}
-          <div className="text-center mt-20">
+          <div className={`text-center mt-20 transition-all duration-1000 ease-out ${isVisible('services') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`} style={{ transitionDelay: isVisible('services') ? '600ms' : '0ms' }}>
             <button
               onClick={() => navigate('services')}
               className="group relative text-black border border-black px-16 py-4 font-light text-sm uppercase tracking-widest hover:bg-black hover:text-white transition-all duration-300">
@@ -350,56 +291,12 @@ export default function Home() {
         </div>
       </section>
 
-      {/* About Section */}
-      {/* <section id="about" className="py-24 bg-gradient-to-br from-stone-50 to-white">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <div className={`transition-all duration-1000 ${isVisible.about ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-8'}`}>
-              <div className="aspect-[4/5] bg-stone-200 overflow-hidden">
-                <div className="w-full h-full bg-gradient-to-br from-stone-300 to-stone-100 flex items-center justify-center">
-                  <span className="text-stone-500 font-light">Photo</span>
-                </div>
-              </div>
-            </div>
-            
-            <div className={`transition-all duration-1000 ${isVisible.about ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-8'}`}>
-              <h2 className="text-4xl md:text-5xl font-extralight text-stone-900 mb-8">
-                The Artist Behind
-                <span className="block text-stone-600">the Craft</span>
-              </h2>
-              
-              <p className="text-stone-600 font-light mb-6 text-md leading-relaxed font-montserrat">
-                With a year of dedicated experience in nail artistry, I've transformed my passion for beauty into a craft that celebrates individuality and self-expression.
-              </p>
-              
-              <p className="text-stone-600 font-light mb-6 text-md leading-relaxed font-montserrat">
-                Each set I create is more than just nails—it's a reflection of your personality, a boost to your confidence, and a testament to the artistry that happens when creativity meets precision.
-              </p>
-
-              <div className="grid grid-cols-2 gap-6 mb-8 mt-12">
-                {[
-                  { icon: <Shield className="w-5 h-5" />, text: 'Premium Materials' },
-                  { icon: <Users className="w-5 h-5" />, text: '50+ Happy Clients' },
-                  { icon: <Award className="w-5 h-5" />, text: 'Certified Professional' },
-                  { icon: <Clock className="w-5 h-5" />, text: '2+ Years Experience' }
-                ].map((item, idx) => (
-                  <div key={idx} className="flex items-center space-x-3">
-                    <div className="text-stone-600">{item.icon}</div>
-                    <span className="text-stone-600 font-light text-sm">{item.text}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section> */}
-
-      <GalleryPreview isVisible={isVisible} />
+      <GalleryPreview isVisible={visibilityObject} />
 
       {/* Testimonials */}
-      <section ref={testimonialsRef} id="testimonials" className="py-24 bg-gradient-to-br from-stone-50 to-white">
+      <section id="testimonials" className="py-24 bg-gradient-to-br from-stone-50 to-white">
         <div className="max-w-6xl mx-auto px-6">
-          <div className={`text-center mb-20 transition-all duration-1000 ${isVisible.testimonials ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+          <div className={`text-center mb-20 transition-all duration-1000 ease-out ${isVisible('testimonials') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}>
             <h2 className="text-4xl md:text-5xl font-extralight text-stone-900 mb-6">
               Client Stories
             </h2>
@@ -422,8 +319,10 @@ export default function Home() {
             ].map((testimonial, idx) => (
               <div
                 key={idx}
-                className={`bg-white p-8 border border-stone-100 transition-all duration-1000 ${isVisible.testimonials ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
-                style={{ transitionDelay: `${idx * 200}ms` }}
+                className={`bg-white p-8 border border-stone-100 transition-all duration-1000 ease-out ${isVisible('testimonials') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}
+                style={{ 
+                  transitionDelay: isVisible('testimonials') ? `${idx * 200}ms` : '0ms'
+                }}
               >
                 <div className="flex mb-4">
                   {[...Array(5)].map((_, i) => (
@@ -443,20 +342,22 @@ export default function Home() {
       {/* FAQ Section */}
       <section className="py-24 bg-white" id="faq">
         <div className="max-w-4xl mx-auto px-6">
-          <div className={`text-center mb-20 transition-all duration-1000 ${isVisible.faq ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+          <div className={`text-center mb-20 transition-all duration-1000 ease-out ${isVisible('faq') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}>
             <h2 className="text-4xl md:text-5xl font-extralight text-stone-900 mb-6">
               Frequently Asked
             </h2>
           </div>
 
-          <div id="faq" className="space-y-2">
+          <div className="space-y-2">
             {faqs.map((item, index) => {
               const isOpen = openIndex === index;
               return (
                 <div
                   key={index}
-                  className={`bg-white border border-stone-100 overflow-hidden transition-all duration-1000 ${isVisible.faq ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
-                  style={{ transitionDelay: `${index * 100}ms` }}
+                  className={`bg-white border border-stone-100 overflow-hidden transition-all duration-1000 ease-out ${isVisible('faq') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+                  style={{ 
+                    transitionDelay: isVisible('faq') ? `${index * 50}ms` : '0ms'
+                  }}
                 >
                   <button
                     onClick={() => toggleFAQ(index)}
@@ -501,6 +402,52 @@ export default function Home() {
           </div>
         </div>
       </footer>
+
+      <style jsx>{`
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+
+        .animate-fade-in-up {
+          animation: fadeInUp 1s ease-out forwards;
+        }
+
+        .animate-fade-in-up-delay-1 {
+          animation: fadeInUp 1.2s ease-out 0.2s both;
+        }
+
+        .animate-fade-in-up-delay-2 {
+          animation: fadeInUp 1.5s ease-out 0.4s both;
+        }
+
+        .animate-fade-in-up-delay-3 {
+          animation: fadeInUp 1s ease-out 0.6s both;
+        }
+
+        .animate-fade-in-up-delay-4 {
+          animation: fadeInUp 1s ease-out 0.8s both;
+        }
+
+        .animate-fade-in-delay-5 {
+          animation: fadeIn 1s ease-out 1.2s both;
+        }
+      `}</style>
     </div>
   );
 }
