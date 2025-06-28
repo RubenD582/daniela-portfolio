@@ -182,7 +182,7 @@ export default function Home() {
 
             {/* Call-to-Action Buttons with Enhanced Design */}
             <div
-              className={`flex flex-col sm:flex-row gap-6 mt-24 justify-center items-center transition-all duration-[1000ms] ease-[cubic-bezier(0.23,1,0.32,1)] ${
+              className={`flex flex-col sm:flex-row gap-3 sm:gap-6 mt-14 justify-center items-center transition-all duration-[1000ms] ease-[cubic-bezier(0.23,1,0.32,1)] ${
                 isVisible.hero
                   ? 'opacity-100 translate-y-0 scale-100'
                   : 'opacity-0 translate-y-12 scale-96'
@@ -231,7 +231,7 @@ export default function Home() {
         </div>
 
         {/* Enhanced Scroll Indicator */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
+        <div className="hidden md:block absolute bottom-8 left-1/2 transform -translate-x-1/2">
           <div className="flex flex-col items-center group">
             <span className="text-xs text-neutral-500 mb-3 uppercase tracking-widest group-hover:text-neutral-700 transition-colors duration-300">
               Scroll Down
@@ -243,10 +243,10 @@ export default function Home() {
         </div>
 
         {/* Corner Decorative Elements */}
-        <div className="absolute top-24 left-8 w-8 h-8 border-l border-t border-neutral-200"></div>
-        <div className="absolute top-24 right-8 w-8 h-8 border-r border-t border-neutral-200"></div>
-        <div className="absolute bottom-8 left-8 w-8 h-8 border-l border-b border-neutral-200"></div>
-        <div className="absolute bottom-8 right-8 w-8 h-8 border-r border-b border-neutral-200"></div>
+        <div className="hidden md:block absolute top-24 left-8 w-8 h-8 border-l border-t border-neutral-200"></div>
+        <div className="hidden md:block absolute top-24 right-8 w-8 h-8 border-r border-t border-neutral-200"></div>
+        <div className="hidden md:block absolute bottom-8 left-8 w-8 h-8 border-l border-b border-neutral-200"></div>
+        <div className="hidden md:block absolute bottom-8 right-8 w-8 h-8 border-r border-b border-neutral-200"></div>
       </section>
 
       {/* Services Section - Clean, Minimal, Professional */}
