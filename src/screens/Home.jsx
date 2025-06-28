@@ -140,7 +140,7 @@ export default function Home() {
             </div>
 
             <h1
-              className={`text-6xl md:text-8xl font-light font-bodoni-moda text-neutral-900 mb-8 tracking-tight leading-[0.85] transition-all duration-[1300ms] ease-[cubic-bezier(0.165,0.84,0.44,1)] ${
+              className={`text-5xl md:text-8xl font-light font-bodoni-moda text-neutral-900 mb-8 tracking-tight leading-[0.85] transition-all duration-[1300ms] ease-[cubic-bezier(0.165,0.84,0.44,1)] ${
                 isVisible.hero
                   ? 'opacity-100 translate-y-0 scale-100'
                   : 'opacity-0 translate-y-20 scale-98'
@@ -193,15 +193,15 @@ export default function Home() {
             >
               <button
                 onClick={() => scrollToElement('contact', 1500)}
-                className="group relative bg-neutral-900 text-white px-12 py-5 text-sm font-medium uppercase tracking-wider hover:bg-neutral-800 transition-all duration-[400ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] flex items-center justify-center hover:shadow-xl transform hover:-translate-y-1 overflow-hidden w-56 h-16"
+                className="group relative bg-neutral-900 text-white px-8 py-4 text-sm font-medium uppercase tracking-wider hover:bg-neutral-800 transition-all duration-[400ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] flex items-center justify-center hover:shadow-xl transform hover:-translate-y-1 overflow-hidden"
               >
                 <div className="absolute inset-0 transform translate-x-full transition-transform duration-300 group-hover:translate-x-0"></div>
                 <span className="relative z-10">Book Now</span>
                 <ArrowRight className="ml-3 w-4 h-4 transition-all duration-[400ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] group-hover:translate-x-1" />
               </button>
-              <button className="group relative text-neutral-700 hover:text-neutral-900 transition-all duration-[400ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] text-sm font-medium uppercase tracking-wider px-12 py-5 border border-neutral-200 hover:border-neutral-400 hover:shadow-lg transform hover:-translate-y-1 flex items-center justify-center overflow-hidden backdrop-blur-sm w-56 h-16">
+              <button className="group relative text-neutral-700 hover:text-neutral-900 transition-all duration-[400ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] text-sm font-medium uppercase tracking-wider px-8 py-4 border border-neutral-200 hover:border-neutral-400 hover:shadow-lg transform hover:-translate-y-1 flex items-center justify-center overflow-hidden backdrop-blur-sm">
                 <span className="relative z-10 flex items-center">
-                  <div className="mr-2 w-1 h-1 bg-[#CFB53B] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  {/* <div className="mr-2 w-1 h-1 bg-[#CFB53B] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div> */}
                   View Gallery
                 </span>
                 <div className="absolute inset-0 bg-gradient-to-r from-neutral-50/50 to-neutral-100/50 transform translate-x-full transition-transform duration-300 group-hover:translate-x-0"></div>
