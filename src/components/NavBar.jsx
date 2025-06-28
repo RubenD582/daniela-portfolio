@@ -126,13 +126,13 @@ export default function Navbar() {
           <div className="hidden md:flex items-center space-x-8">
             <a
               href="#"
-              className="text-stone-600 hover:text-stone-900 transition-colors text-sm font-light"
+              className="text-stone-600 hover:text-stone-900 transition-colors text-sm font-light uppercase"
             >
               Home
             </a>
             <button
               onClick={() => handleScrollToSection('services')}
-              className="text-stone-600 hover:text-stone-900 transition-colors text-sm font-light"
+              className="text-stone-600 hover:text-stone-900 transition-colors text-sm font-light uppercase"
             >
               Services
             </button>
@@ -140,26 +140,26 @@ export default function Navbar() {
             {/* Gallery Link */}
             <button
               onClick={handleGalleryClick}
-              className="text-stone-600 hover:text-stone-900 transition-colors text-sm font-light"
+              className="text-stone-600 hover:text-stone-900 transition-colors text-sm font-light uppercase"
             >
               Gallery
             </button>
 
             <button
               onClick={() => handleScrollToSection('testimonials')}
-              className="text-stone-600 hover:text-stone-900 transition-colors text-sm font-light"
+              className="text-stone-600 hover:text-stone-900 transition-colors text-sm font-light uppercase"
             >
               Client Stories
             </button>
             <button
               onClick={() => handleScrollToSection('faq')}
-              className="text-stone-600 hover:text-stone-900 transition-colors text-sm font-light"
+              className="text-stone-600 hover:text-stone-900 transition-colors text-sm font-light uppercase"
             >
               FAQ
             </button>
             <button
               onClick={() => handleScrollToSection('contact')}
-              className="text-stone-600 hover:text-stone-900 transition-colors text-sm font-light"
+              className="text-stone-600 hover:text-stone-900 transition-colors text-sm font-light uppercase"
             >
               Contact
             </button>
@@ -167,7 +167,7 @@ export default function Navbar() {
               href="https://wa.me/27661043677"
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-stone-900 text-white px-6 py-2 text-sm font-light hover:bg-stone-800 transition-colors"
+              className="bg-stone-900 text-white px-6 py-2 text-sm font-light hover:bg-stone-800 transition-colors uppercase"
             >
               Book Now
             </a>
@@ -217,7 +217,7 @@ export default function Navbar() {
                   onClick={() => handleMobileNavClick()}
                   className="flex items-center px-6 py-3 text-stone-700 hover:text-stone-900 hover:bg-stone-50 transition-colors group"
                 >
-                  <span className="font-medium">Home</span>
+                  <span className="font-medium uppercase">Home</span>
                   <ChevronRight size={16} className="ml-auto text-stone-400 group-hover:text-stone-600 transition-colors" />
                 </a>
                 
@@ -225,7 +225,7 @@ export default function Navbar() {
                   onClick={() => handleMobileNavClick(() => handleScrollToSection('services'))}
                   className="flex items-center w-full px-6 py-3 text-left text-stone-700 hover:text-stone-900 hover:bg-stone-50 transition-colors group"
                 >
-                  <span className="font-medium">Services</span>
+                  <span className="font-medium uppercase">Services</span>
                   <ChevronRight size={16} className="ml-auto text-stone-400 group-hover:text-stone-600 transition-colors" />
                 </button>
 
@@ -234,7 +234,7 @@ export default function Navbar() {
                   onClick={() => handleMobileNavClick(handleGalleryClick)}
                   className="flex items-center w-full px-6 py-3 text-left text-stone-700 hover:text-stone-900 hover:bg-stone-50 transition-colors group"
                 >
-                  <span className="font-medium">Gallery</span>
+                  <span className="font-medium uppercase">Gallery</span>
                   <ChevronRight size={16} className="ml-auto text-stone-400 group-hover:text-stone-600 transition-colors" />
                 </button>
 
@@ -242,7 +242,7 @@ export default function Navbar() {
                   onClick={() => handleMobileNavClick(() => handleScrollToSection('testimonials'))}
                   className="flex items-center w-full px-6 py-3 text-left text-stone-700 hover:text-stone-900 hover:bg-stone-50 transition-colors group"
                 >
-                  <span className="font-medium">Client Stories</span>
+                  <span className="font-medium uppercase">Client Stories</span>
                   <ChevronRight size={16} className="ml-auto text-stone-400 group-hover:text-stone-600 transition-colors" />
                 </button>
 
@@ -250,7 +250,7 @@ export default function Navbar() {
                   onClick={() => handleMobileNavClick(() => handleScrollToSection('faq'))}
                   className="flex items-center w-full px-6 py-3 text-left text-stone-700 hover:text-stone-900 hover:bg-stone-50 transition-colors group"
                 >
-                  <span className="font-medium">FAQ</span>
+                  <span className="font-medium uppercase">FAQ</span>
                   <ChevronRight size={16} className="ml-auto text-stone-400 group-hover:text-stone-600 transition-colors" />
                 </button>
 
@@ -258,7 +258,7 @@ export default function Navbar() {
                   onClick={() => handleMobileNavClick(() => handleScrollToSection('contact'))}
                   className="flex items-center w-full px-6 py-3 text-left text-stone-700 hover:text-stone-900 hover:bg-stone-50 transition-colors group"
                 >
-                  <span className="font-medium">Contact</span>
+                  <span className="font-medium uppercase">Contact</span>
                   <ChevronRight size={16} className="ml-auto text-stone-400 group-hover:text-stone-600 transition-colors" />
                 </button>
               </nav>
@@ -271,7 +271,7 @@ export default function Navbar() {
                 onClick={() => setIsMobileMenuOpen(false)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block w-full bg-stone-900 text-white px-6 py-3 text-center font-medium hover:bg-stone-800 transition-colors"
+                className="block w-full bg-stone-900 text-white px-6 py-3 text-center font-medium hover:bg-stone-800 transition-colors uppercase"
               >
                 Book Now
               </a>

@@ -120,43 +120,38 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Hero Section with Enhanced Feminine Animations */}
+      {/* Enhanced Professional Minimal Hero Section */}
       <section
         id="hero"
-        className="relative h-[100vh] mt-18 flex items-center justify-center overflow-hidden bg-[#F8F8F8]"
+        className="relative h-screen flex items-center justify-center overflow-hidden bg-white"
       >
-        <div className="relative z-10 text-center px-6 max-w-4xl w-full">
+        <div className="relative z-10 text-center px-6 max-w-5xl w-full">
           <div
             className={`transition-all duration-[750ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] ${
               isVisible.hero ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'
             }`}
           >
-            {/* Professional Badge with Gentle Float */}
-            <div 
-              className={`inline-flex items-center bg-black text-white px-4 py-2 mb-10 transition-all duration-[1000ms] ease-[cubic-bezier(0.23,1,0.32,1)] ${
-                isVisible.hero ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-8 scale-95'
-              }`}
-              style={{
-                transitionDelay: isVisible.hero ? '100ms' : '0ms'
-              }}
-            >
-              <span className="text-xs font-light uppercase tracking-widest">Certified Nail Technician</span>
+            {/* Professional Badge */}
+            <div className="inline-flex items-center mb-6 px-4 py-2 bg-white/80">
+              <div className="w-2 h-2 bg-[#CFB53B] rounded-full mr-3 animate-pulse"></div>
+              <p className="text-xs text-gray-600 font-medium uppercase tracking-widest">
+                Certified Nail Technician
+              </p>
             </div>
 
-            {/* Animated Title with Staggered, Flowing Effect */}
             <h1
-              className={`text-4xl md:text-7xl font-extralight text-stone-900 mb-6 tracking-tight leading-tight font-bodoni-moda transition-all duration-[1300ms] ease-[cubic-bezier(0.165,0.84,0.44,1)] ${
+              className={`text-6xl md:text-8xl font-light font-bodoni-moda text-neutral-900 mb-8 tracking-tight leading-[0.85] transition-all duration-[1300ms] ease-[cubic-bezier(0.165,0.84,0.44,1)] ${
                 isVisible.hero
                   ? 'opacity-100 translate-y-0 scale-100'
                   : 'opacity-0 translate-y-20 scale-98'
               }`}
               style={{
-                transitionDelay: isVisible.hero ? '200ms' : '0ms'
+                transitionDelay: isVisible.hero ? '200ms' : '0ms',
               }}
             >
-              BRINGING FASION
+              PRECISION
               <span
-                className={`block text-stone-900 transition-all duration-[1500ms] ease-[cubic-bezier(0.19,1,0.22,1)] ${
+                className={`block transition-all duration-[1500ms] ease-[cubic-bezier(0.19,1,0.22,1)] mt-3 ${
                   isVisible.hero
                     ? 'opacity-100 translate-y-0 scale-100'
                     : 'opacity-0 translate-y-24 scale-97'
@@ -165,28 +160,29 @@ export default function Home() {
                   transitionDelay: isVisible.hero ? '100ms' : '0ms'
                 }}
               >
-                TO YOUR <span className='text-[#CFB53B]'>FINGERTIPS.</span>
+                & <span className="text-[#CFB53B] relative">
+                  ELEGANCE
+                </span>
               </span>
             </h1>
 
-            {/* Description with Soft Fade-in */}
+            {/* Elegant Tagline */}
             <p
-              className={`text-sm md:text-md text-stone-600 mb-12 max-w-4xl mx-auto leading-relaxed mt-10 transition-all duration-[1200ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] ${
+              className={`text-sm md:text-lg font-sans text-neutral-600 mb-12 max-w-2xl mx-auto leading-relaxed font-light transition-all duration-[1000ms] ease-[cubic-bezier(0.23,1,0.32,1)] ${
                 isVisible.hero
                   ? 'opacity-100 translate-y-0'
-                  : 'opacity-0 translate-y-16'
+                  : 'opacity-0 translate-y-8'
               }`}
               style={{
-                transitionDelay: isVisible.hero ? '200ms' : '0ms'
+                transitionDelay: isVisible.hero ? '400ms' : '0ms'
               }}
             >
-              Precision-crafted press-on nails and bespoke manicure services.
-              Where technical excellence meets artistic vision for the modern professional.
+              Transforming your nails into works of art with meticulous attention to detail and contemporary elegance.
             </p>
 
-            {/* Call-to-Action Buttons with Graceful Entrance */}
+            {/* Call-to-Action Buttons with Enhanced Design */}
             <div
-              className={`flex flex-col sm:flex-row gap-4 justify-center items-center mt-16 transition-all duration-[1000ms] ease-[cubic-bezier(0.23,1,0.32,1)] ${
+              className={`flex flex-col sm:flex-row gap-6 mt-24 justify-center items-center transition-all duration-[1000ms] ease-[cubic-bezier(0.23,1,0.32,1)] ${
                 isVisible.hero
                   ? 'opacity-100 translate-y-0 scale-100'
                   : 'opacity-0 translate-y-12 scale-96'
@@ -197,85 +193,158 @@ export default function Home() {
             >
               <button
                 onClick={() => scrollToElement('contact', 1500)}
-                className="group bg-stone-900 text-white px-8 py-4 text-sm font-light hover:bg-stone-800 transition-all duration-[400ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] flex items-center justify-center transform hover:-translate-y-0.5 w-56"
+                className="group relative bg-neutral-900 text-white px-12 py-5 text-sm font-medium uppercase tracking-wider hover:bg-neutral-800 transition-all duration-[400ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] flex items-center justify-center hover:shadow-xl transform hover:-translate-y-1 overflow-hidden w-56 h-16"
               >
-                <span>Book Appointment</span>
-                <ArrowRight className="ml-2 w-4 h-4 transition-transform duration-[400ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)]" />
+                <div className="absolute inset-0 transform translate-x-full transition-transform duration-300 group-hover:translate-x-0"></div>
+                <span className="relative z-10">Book Now</span>
+                <ArrowRight className="ml-3 w-4 h-4 transition-all duration-[400ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] group-hover:translate-x-1" />
               </button>
+              <button className="group relative text-neutral-700 hover:text-neutral-900 transition-all duration-[400ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] text-sm font-medium uppercase tracking-wider px-12 py-5 border border-neutral-200 hover:border-neutral-400 hover:shadow-lg transform hover:-translate-y-1 flex items-center justify-center overflow-hidden backdrop-blur-sm w-56 h-16">
+                <span className="relative z-10 flex items-center">
+                  <div className="mr-2 w-1 h-1 bg-[#CFB53B] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  View Gallery
+                </span>
+                <div className="absolute inset-0 bg-gradient-to-r from-neutral-50/50 to-neutral-100/50 transform translate-x-full transition-transform duration-300 group-hover:translate-x-0"></div>
+              </button>
+            </div>
 
-              <button className="group bg-transparent text-stone-600 hover:text-stone-900 transition-all duration-[400ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] text-sm font-light px-8 py-4 border border-stone-200 hover:border-stone-300 transform hover:-translate-y-0.5 w-56 flex items-center justify-center">
-                <span>View Nail Gallery</span>
-              </button>
+            {/* <div
+              className="
+                mt-20
+                w-full
+                grid
+                items-center
+                grid-cols-[1fr_auto_1fr]
+              "
+            >
+              <span className="justify-self-end pr-4 text-xs uppercase tracking-widest text-neutral-500">
+                Great Reviews
+              </span>
+
+              <div className="h-4 w-px bg-neutral-300 justify-self-center"></div>
+
+              <span className="justify-self-start pl-4 text-xs uppercase tracking-widest text-neutral-500">
+                Licensed &amp; Insured
+              </span>
+            </div> */}
+          </div>
+        </div>
+
+        {/* Enhanced Scroll Indicator */}
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
+          <div className="flex flex-col items-center group">
+            <span className="text-xs text-neutral-500 mb-3 uppercase tracking-widest group-hover:text-neutral-700 transition-colors duration-300">
+              Scroll Down
+            </span>
+            <div className="relative">
+              <div className="w-px h-12 bg-gradient-to-b from-neutral-400 to-transparent transition-colors duration-300"></div>
             </div>
           </div>
         </div>
+
+        {/* Corner Decorative Elements */}
+        <div className="absolute top-24 left-8 w-8 h-8 border-l border-t border-neutral-200"></div>
+        <div className="absolute top-24 right-8 w-8 h-8 border-r border-t border-neutral-200"></div>
+        <div className="absolute bottom-8 left-8 w-8 h-8 border-l border-b border-neutral-200"></div>
+        <div className="absolute bottom-8 right-8 w-8 h-8 border-r border-b border-neutral-200"></div>
       </section>
 
-      {/* Services Section */}
-      <section id="services" className="py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className={`text-center mb-20 transition-all duration-1000 ${isVisible.services ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-            <h2 className="text-4xl md:text-5xl font-extralight text-stone-900 mb-6">
-              Professional Nail Services
+      {/* Services Section - Clean, Minimal, Professional */}
+      <section id="services" className="py-32 bg-white">
+        <div className="max-w-6xl mx-auto px-8">
+          
+          {/* Header */}
+          <div className={`text-center mb-24 transition-all duration-1000 ${isVisible.services ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+            <h2 className="text-5xl md:text-6xl font-extralight text-black mb-8 tracking-tight">
+              Professional Services
             </h2>
-            <p className="text-stone-600 font-light max-w-2xl mx-auto text-lg">
+            <p className="text-gray-600 font-light max-w-2xl mx-auto text-lg leading-relaxed font-sans">
               Expert nail care and artistry with premium products and meticulous attention to detail.
             </p>
           </div>
-          
-          <div className="grid md:grid-cols-3 gap-12">
+
+          {/* Services Grid */}
+          <div className="grid md:grid-cols-3 gap-8">
             {[
               {
                 title: 'Gel & Acrylic Overlays',
-                description: 'Professional overlays on your natural nails for strength and beauty.',
-                price: 'From R160',
+                description: 'Professional overlays on your natural nails for strength and lasting beauty.',
+                originalPrice: 'R200',
+                price: 'FROM R160',
+                discount: '20% OFF'
               },
               {
                 title: 'Extensions & Sculptures',
-                description: 'Create length and shape with our expert extension services.',
-                price: 'From R210',
+                description: 'Expert extension services to create perfect length and elegant shape.',
+                originalPrice: 'R280',
+                price: 'FROM R210',
+                discount: '25% OFF',
+                popular: true
               },
               {
                 title: 'Nail Art & Services',
-                description: 'Custom nail art, fills, repairs, and maintenance services.',
-                price: 'From R5',
+                description: 'Custom nail art, professional fills, repairs and maintenance services.',
+                originalPrice: 'R15',
+                price: 'FROM R5',
+                discount: '67% OFF'
               }
             ].map((service, idx) => (
               <div
                 key={idx}
-                className={`group bg-white p-8 cursor-pointer hover:-translate-y-2 transition-all duration-500 relative ${
-                  idx === 1 
-                    ? 'border border-black' 
-                    : 'border border-stone-100 hover:border-black'
-                } ${isVisible.services ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
-                style={{ transitionDelay: `${idx * 200}ms` }}
+                className={`group bg-white p-12 cursor-pointer hover:-translate-y-2 transition-all duration-300 relative border border-gray-100 hover:border-gray-200 ${
+                  isVisible.services ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+                }`}
+                style={{ transitionDelay: `${idx * 150}ms` }}
               >
-                {idx === 1 && (
-                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                    <span className="bg-black text-white px-4 py-1 text-xs font-medium">
-                      MOST POPULAR
+                {/* Popular Badge */}
+                {service.popular && (
+                  <div className="absolute top-0 left-0 right-0 h-1 bg-black"></div>
+                )}
+
+                {/* Content */}
+                <div className="h-full flex flex-col">
+                  <div className="mb-2">
+                    <span className="text-base font-medium text-gray-400 uppercase tracking-widest">
+                      {String(idx + 1).padStart(2, '0')}
                     </span>
                   </div>
-                )}
-                <h3 className="text-lg font-light text-stone-900 mb-3 uppercase">{service.title}</h3>
-                <p className="text-stone-600 font-light text-sm mb-6 leading-relaxed">{service.description}</p>
-                <div className="flex justify-between items-center">
-                  <span className="text-stone-900 font-medium">{service.price}</span>
-                  <button className="text-stone-600 hover:text-stone-900 transition-colors text-sm">
-                    Book Now →
-                  </button>
+
+                  <h3 className="text-xl font-light text-black mb-6 leading-tight">
+                    {service.title}
+                  </h3>
+
+                  <p className="text-gray-600 font-light leading-relaxed mb-auto text-sm">
+                    {service.description}
+                  </p>
+
+                  {/* Pricing */}
+                  <div className="mt-12 pt-8 border-t border-gray-100">
+                    <div className="flex items-end justify-between">
+                      <div>
+                        <div className="text-sm text-gray-400 mb-1 font-light line-through">
+                          WAS {service.originalPrice}
+                        </div>
+                        <div className="text-2xl font-light text-black">
+                          {service.price}
+                        </div>
+                      </div>
+                      
+                      <div className="text-sm font-medium text-black">
+                        {service.discount}
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             ))}
           </div>
 
-          {/* View More Button */}
-          <div className="text-center mt-12">
-            <button 
-              className="bg-stone-900 text-white px-8 py-3 hover:bg-stone-800 transition-colors duration-300 font-light"
+          {/* CTA */}
+          <div className="text-center mt-20">
+            <button
               onClick={() => navigate('services')}
-            >
-              View All Services
+              className="group relative text-black border border-black px-16 py-4 font-light text-sm uppercase tracking-widest hover:bg-black hover:text-white transition-all duration-300">
+              <span className="relative z-10">View All Services</span>
             </button>
           </div>
         </div>

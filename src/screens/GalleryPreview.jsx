@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { initializeApp } from "firebase/app";
-import { getStorage, ref as storageRef, getDownloadURL } from 'firebase/storage';
+import { getStorage, ref as storageRef, getDownloadURL, listAll } from 'firebase/storage';
 import { ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -21,53 +21,123 @@ const firebaseApp = initializeApp(firebaseConfig);
 const GalleryPreview = ({ isVisible = {} }) => {
   const [imageURLs, setImageURLs] = useState({});
   const [loadedImages, setLoadedImages] = useState(new Set());
+  const [availableImages, setAvailableImages] = useState([]);
+  const [galleryItems, setGalleryItems] = useState([]);
+  const [isLoadingImageList, setIsLoadingImageList] = useState(true);
   
   const storage = getStorage(firebaseApp);
   const navigate = useNavigate();
   
-  // Cache keys for localStorage - only cache URLs now
+  // Cache keys for localStorage
   const CACHE_KEYS = {
     imageUrls: 'gallery_image_urls',
-    timestamp: 'gallery_url_cache_timestamp'
+    imageList: 'gallery_image_list',
+    timestamp: 'gallery_cache_timestamp'
   };
   
   // Cache duration (24 hours in milliseconds)
   const CACHE_DURATION = 24 * 60 * 60 * 1000;
   
-  // Function to check if URL cache is valid
-  const isUrlCacheValid = () => {
+  // Function to check if cache is valid
+  const isCacheValid = () => {
     const timestamp = JSON.parse(localStorage.getItem(CACHE_KEYS.timestamp) || '0');
     return Date.now() - timestamp < CACHE_DURATION;
   };
 
   const handleGalleryClick = () => {
+    console.log("test");
     navigate('/designs');
   };
   
-  // Function to generate random gallery items (always fresh)
-  const generateRandomItems = () => {
-    const totalDesigns = 14;
-    const itemsToShow = 8;
-    const allItems = Array.from({ length: totalDesigns }, (_, i) => i + 1);
-    
-    // Shuffle array and take first 8 items
-    for (let i = allItems.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [allItems[i], allItems[j]] = [allItems[j], allItems[i]];
-    }
-    
-    return allItems.slice(0, itemsToShow);
+  // Function to extract image number from filename (e.g., "1.jpg" -> 1)
+  const extractImageNumber = (filename) => {
+    const match = filename.match(/^(\d+)\./);
+    return match ? parseInt(match[1], 10) : null;
   };
   
-  // Always generate fresh random items (no caching)
-  const [galleryItems] = useState(() => generateRandomItems());
+  // Function to generate random gallery items from available images
+  const generateRandomItems = (availableImageNumbers, itemsToShow = 8) => {
+    if (availableImageNumbers.length === 0) return [];
+    
+    const shuffled = [...availableImageNumbers];
+    
+    // Shuffle array
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    
+    return shuffled.slice(0, Math.min(itemsToShow, shuffled.length));
+  };
 
+  // Fetch available images from Firebase Storage
   useEffect(() => {
+    const fetchAvailableImages = async () => {
+      setIsLoadingImageList(true);
+      
+      // Try to get cached image list first
+      let cachedImageList = [];
+      try {
+        if (isCacheValid()) {
+          const cachedListString = localStorage.getItem(CACHE_KEYS.imageList);
+          if (cachedListString) {
+            cachedImageList = JSON.parse(cachedListString);
+            setAvailableImages(cachedImageList);
+            setGalleryItems(generateRandomItems(cachedImageList));
+            setIsLoadingImageList(false);
+            return; // Use cached data and skip Firebase call
+          }
+        }
+      } catch (error) {
+        console.error('Error reading cached image list:', error);
+      }
+      
+      // Fetch from Firebase Storage
+      try {
+        const designsRef = storageRef(storage, 'Designs/');
+        const listResult = await listAll(designsRef);
+        
+        // Extract image numbers from filenames and filter valid ones
+        const imageNumbers = listResult.items
+          .map(item => extractImageNumber(item.name))
+          .filter(num => num !== null)
+          .sort((a, b) => a - b); // Sort numerically
+        
+        console.log(`Found ${imageNumbers.length} images:`, imageNumbers);
+        
+        setAvailableImages(imageNumbers);
+        setGalleryItems(generateRandomItems(imageNumbers));
+        
+        // Cache the image list
+        try {
+          localStorage.setItem(CACHE_KEYS.imageList, JSON.stringify(imageNumbers));
+          localStorage.setItem(CACHE_KEYS.timestamp, JSON.stringify(Date.now()));
+        } catch (error) {
+          console.error('Error saving image list to localStorage:', error);
+        }
+        
+      } catch (error) {
+        console.error('Error fetching available images:', error);
+        // Fallback to empty array if Firebase fails
+        setAvailableImages([]);
+        setGalleryItems([]);
+      } finally {
+        setIsLoadingImageList(false);
+      }
+    };
+
+    fetchAvailableImages();
+  }, []);
+
+  // Fetch image URLs for selected gallery items
+  useEffect(() => {
+    if (galleryItems.length === 0) return;
+    
     const fetchImageURLs = async () => {
       // Try to get cached URLs first
       let cachedUrls = {};
       try {
-        if (isUrlCacheValid()) {
+        if (isCacheValid()) {
           const cachedUrlsString = localStorage.getItem(CACHE_KEYS.imageUrls);
           if (cachedUrlsString) {
             cachedUrls = JSON.parse(cachedUrlsString);
@@ -132,10 +202,58 @@ const GalleryPreview = ({ isVisible = {} }) => {
   };
   
   const refreshGallery = () => {
-    // Just reload the page to get new random items
-    // URL cache will persist, but we'll get new random selection
-    window.location.reload();
+    if (availableImages.length > 0) {
+      setGalleryItems(generateRandomItems(availableImages));
+      setLoadedImages(new Set()); // Reset loaded images
+    }
   };
+
+  // Show loading state while fetching image list
+  if (isLoadingImageList) {
+    return (
+      <section id="gallery" className="py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className={`text-center mb-20 transition-all duration-1000 ${isVisible?.gallery ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+            <h2 className="text-4xl md:text-5xl font-extralight text-stone-900 mb-6">
+              Portfolio Highlights
+            </h2>
+            <p className="text-stone-600 font-light max-w-2xl mx-auto text-lg">
+              Loading our gallery...
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {Array.from({ length: 8 }).map((_, idx) => (
+              <div
+                key={idx}
+                className="aspect-square rounded-lg bg-gradient-to-br from-stone-300 via-stone-200 to-stone-300 animate-pulse"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-stone-300 to-transparent animate-shimmer transform -skew-x-12 w-full h-full"></div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Show message if no images found
+  if (availableImages.length === 0) {
+    return (
+      <section id="gallery" className="py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className={`text-center mb-20 transition-all duration-1000 ${isVisible?.gallery ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+            <h2 className="text-4xl md:text-5xl font-extralight text-stone-900 mb-6">
+              Portfolio Highlights
+            </h2>
+            <p className="text-stone-600 font-light max-w-2xl mx-auto text-lg">
+              No images found in the gallery.
+            </p>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section id="gallery" className="py-24 bg-white">
@@ -144,7 +262,7 @@ const GalleryPreview = ({ isVisible = {} }) => {
           <h2 className="text-4xl md:text-5xl font-extralight text-stone-900 mb-6">
             Portfolio Highlights
           </h2>
-          <p className="text-stone-600 font-light max-w-2xl mx-auto text-lg">
+          <p className="text-stone-600 font-light max-w-2xl mx-auto text-lg font-sans">
             A curated selection of our most celebrated designs, showcasing the versatility and artistry of our craft.
           </p>
         </div>
@@ -197,18 +315,11 @@ const GalleryPreview = ({ isVisible = {} }) => {
         </div>
         
         <div className="flex justify-center mt-12 space-x-4">
-          <button
-            className="group bg-stone-900 text-white px-8 py-4 text-sm font-light
-                      hover:bg-stone-800 transition-all duration-[400ms]
-                      ease-[cubic-bezier(0.25,0.46,0.45,0.94)] flex items-center
-                      transform hover:scale-[1.02] hover:-translate-y-0.5"
-            onClick={handleGalleryClick}
+          <button 
+            onClick={handleGalleryClick} 
+            className="group relative text-black border border-black px-16 py-4 font-light text-sm uppercase tracking-widest hover:bg-black hover:text-white transition-all duration-300"
           >
-            View Full Gallery
-            <ArrowRight
-              className="ml-2 w-4 h-4 transition-transform duration-[400ms]
-                        ease-[cubic-bezier(0.25,0.46,0.45,0.94)] group-hover:translate-x-1"
-            />
+            <span className="relative z-10">View Gallery</span>
           </button>
         </div>
       </div>

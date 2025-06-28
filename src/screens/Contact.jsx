@@ -66,12 +66,12 @@ const ContactSection = () => {
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid lg:grid-cols-2 gap-16">
           <div>
-            <h2 className="text-4xl md:text-4xl font-extralight mb-12 mt-10 text-gray-900">
+            <h2 className="text-4xl md:text-4xl font-extralight mb-12 mt-10 text-gray-900 font-bodoni-moda">
               LET'S CREATE
               <span className="block text-[#CFB53B]">SOMETHING BEAUTIFUL</span>
             </h2>
             
-            <p className="text-gray-600 font-light mb-12 text-md leading-relaxed font-montserrat">
+            <p className="text-gray-600 font-light mb-12 text-md leading-relaxed font-sans text-lg">
               Ready to elevate your style? Book a consultation and let's bring your nail vision to life.
             </p>
 
@@ -110,10 +110,10 @@ const ContactSection = () => {
                   className="flex items-center space-x-4 hover:underline text-gray-700 hover:text-gray-900"
                 >
                   <div>
-                    <div className="text-xs text-gray-500 uppercase tracking-wider font-montserrat">
+                    <div className="text-xs text-gray-500 uppercase tracking-wider font-sans">
                       {contact.label}
                     </div>
-                    <div className="text-gray-800 font-light">
+                    <div className="text-gray-800 font-sans">
                       {contact.value}
                     </div>
                   </div>

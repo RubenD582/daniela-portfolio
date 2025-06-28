@@ -5,10 +5,11 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Lora', 'serif'],
+        sans: ['Montserrat', 'sans-serif'], // Clean default sans-serif
+        serif: ['Cormorant Garamond', 'serif'], // Clean default serif
         'dancing-script': ['Dancing Script', 'cursive'],
         'bodoni-moda': ['Bodoni Moda', 'serif'],
-        montserrat: ['Montserrat', 'sans-serif'],
+        'lora': ['Lora', 'serif'], // Keep Lora available if needed
       },
     },
   },
