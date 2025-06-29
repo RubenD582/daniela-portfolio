@@ -74,8 +74,19 @@ export const faqs = [
 export default function Home() {
   const [openIndex, setOpenIndex] = useState(null);
   const [animatedSections, setAnimatedSections] = useState(new Set());
+  const [isLoaded, setIsLoaded] = useState(false);
   const navigate = useNavigate();
   
+  // Add loading state to prevent FOUC
+  useEffect(() => {
+    // Ensure component is fully mounted and styles loaded
+    const timer = setTimeout(() => {
+      setIsLoaded(true);
+    }, 100);
+    
+    return () => clearTimeout(timer);
+  }, []);
+
   // Simple scroll-based animation
   useEffect(() => {
     const handleScroll = () => {
@@ -95,17 +106,21 @@ export default function Home() {
       });
     };
 
-    // Check on mount
-    handleScroll();
-    
-    // Check on scroll
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [animatedSections]);
+    // Only start scroll handling after component is loaded
+    if (isLoaded) {
+      handleScroll();
+      window.addEventListener('scroll', handleScroll, { passive: true });
+      
+      return () => window.removeEventListener('scroll', handleScroll);
+    }
+  }, [animatedSections, isLoaded]);
 
   const toggleFAQ = (index) => {
     setOpenIndex(prev => (prev === index ? null : index));
+  };
+
+  const handleGalleryClick = () => {
+    navigate('/designs');
   };
 
   const isVisible = (sectionId) => animatedSections.has(sectionId);
@@ -119,25 +134,42 @@ export default function Home() {
     about: isVisible('services') // If there's an about section
   };
 
+  // Show loading state or skeleton
+  if (!isLoaded) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-pulse">
+            <div className="text-2xl font-light text-gray-400 uppercase font-bodoni-moda">Loading...</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-white">
-      {/* Hero Section - Always visible */}
+      {/* Hero Section - Always visible, but with proper initial state */}
       <section
         id="hero"
         className="relative h-screen flex items-center justify-center overflow-hidden bg-white"
+        style={{
+          // Add a fallback background to prevent gray flash
+          backgroundColor: '#ffffff'
+        }}
       >
         <div className="relative z-10 text-center px-6 max-w-5xl w-full">
-          <div className="animate-fade-in-up">
+          <div className={`transition-all duration-700 ease-out ${isLoaded ? 'animate-fade-in-up' : 'opacity-0 translate-y-8'}`}>
             {/* Professional Badge */}
-            <div className="inline-flex items-center mb-6 px-4 py-2 bg-white/80">
+            <div className="inline-flex items-center mb-6 px-4 py-2 bg-white/80 backdrop-blur-sm">
               <p className="text-xs text-gray-600 font-medium uppercase tracking-widest">
                 Certified Nail Technician
               </p>
             </div>
 
-            <h1 className="text-5xl md:text-8xl font-light font-bodoni-moda text-neutral-900 mb-8 tracking-tight leading-[0.85] animate-fade-in-up-delay-1">
+            <h1 className={`text-5xl md:text-8xl font-light font-bodoni-moda text-neutral-900 mb-8 tracking-tight leading-[0.85] transition-all duration-1000 ease-out ${isLoaded ? 'animate-fade-in-up-delay-1' : 'opacity-0 translate-y-8'}`}>
               PRECISION
-              <span className="block mt-3 animate-fade-in-up-delay-2">
+              <span className={`block mt-3 transition-all duration-1200 ease-out ${isLoaded ? 'animate-fade-in-up-delay-2' : 'opacity-0 translate-y-8'}`}>
                 & <span className="text-[#CFB53B] relative">
                   ELEGANCE
                 </span>
@@ -145,12 +177,12 @@ export default function Home() {
             </h1>
 
             {/* Elegant Tagline */}
-            <p className="text-sm md:text-lg font-sans text-neutral-600 mb-12 max-w-2xl mx-auto leading-relaxed font-light animate-fade-in-up-delay-3">
+            <p className={`text-sm md:text-lg font-sans text-neutral-600 mb-12 max-w-2xl mx-auto leading-relaxed font-light transition-all duration-1000 ease-out ${isLoaded ? 'animate-fade-in-up-delay-3' : 'opacity-0 translate-y-8'}`}>
               Transforming your nails into works of art with meticulous attention to detail and contemporary elegance.
             </p>
 
             {/* Call-to-Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-6 mt-14 justify-center items-center animate-fade-in-up-delay-4">
+            <div className={`flex flex-col sm:flex-row gap-3 sm:gap-6 mt-14 justify-center items-center transition-all duration-1000 ease-out ${isLoaded ? 'animate-fade-in-up-delay-4' : 'opacity-0 translate-y-8'}`}>
               <button
                 onClick={() => scrollToElement('contact', 1500)}
                 className="group relative bg-neutral-900 text-white px-14 py-4 text-sm font-medium uppercase tracking-wider hover:bg-neutral-800 transition-all duration-[400ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] flex items-center justify-center hover:shadow-xl transform hover:-translate-y-1 overflow-hidden"
@@ -159,7 +191,9 @@ export default function Home() {
                 <span className="relative z-10">Book Now</span>
                 <ArrowRight className="ml-3 w-4 h-4 transition-all duration-[400ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] group-hover:translate-x-1" />
               </button>
-              <button className="group relative text-neutral-700 hover:text-neutral-900 transition-all duration-[400ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] text-sm font-medium uppercase tracking-wider px-14 py-4 border border-neutral-200 hover:border-neutral-400 hover:shadow-lg transform hover:-translate-y-1 flex items-center justify-center overflow-hidden backdrop-blur-sm">
+              <button 
+                onClick={handleGalleryClick}
+                className="group relative text-neutral-700 hover:text-neutral-900 transition-all duration-[400ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] text-sm font-medium uppercase tracking-wider px-14 py-4 border border-neutral-200 hover:border-neutral-400 hover:shadow-lg transform hover:-translate-y-1 flex items-center justify-center overflow-hidden backdrop-blur-sm">
                 <span className="relative z-10 flex items-center">
                   View Gallery
                 </span>
@@ -170,7 +204,7 @@ export default function Home() {
         </div>
 
         {/* Enhanced Scroll Indicator */}
-        <div className="hidden md:block absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-fade-in-delay-5">
+        <div className={`hidden md:block absolute bottom-8 left-1/2 transform -translate-x-1/2 transition-all duration-1000 ease-out ${isLoaded ? 'animate-fade-in-delay-5' : 'opacity-0'}`}>
           <div className="flex flex-col items-center group">
             <span className="text-xs text-neutral-500 mb-3 uppercase tracking-widest group-hover:text-neutral-700 transition-colors duration-300">
               Scroll Down
@@ -237,15 +271,20 @@ export default function Home() {
                   transitionDelay: isVisible('services') ? `${idx * 150}ms` : '0ms'
                 }}
               >
-                {/* Popular Badge */}
+                {/* Most Popular Banner */}
                 {service.popular && (
-                  <div className="absolute top-0 left-0 right-0 h-1 bg-black"></div>
+                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-10">
+                    <div className="bg-black text-white px-6 py-2 text-xs uppercase tracking-widest font-sans font-medium">
+                      Most Popular
+                    </div>
+                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-[6px] border-r-[6px] border-t-[6px] border-l-transparent border-r-transparent border-t-black"></div>
+                  </div>
                 )}
 
                 {/* Content */}
                 <div className="h-full flex flex-col">
                   <div className="mb-2">
-                    <span className="text-base font-medium text-gray-400 uppercase tracking-widest">
+                    <span className="text-base text-gray-400 uppercase tracking-widest font-lora">
                       {String(idx + 1).padStart(2, '0')}
                     </span>
                   </div>
@@ -254,7 +293,7 @@ export default function Home() {
                     {service.title}
                   </h3>
 
-                  <p className="text-gray-600 font-light leading-relaxed mb-auto text-sm">
+                  <p className="text-gray-500 leading-relaxed mb-auto text-[15px] font-sans">
                     {service.description}
                   </p>
 
@@ -425,27 +464,27 @@ export default function Home() {
         }
 
         .animate-fade-in-up {
-          animation: fadeInUp 1s ease-out forwards;
+          animation: fadeInUp 0.8s ease-out forwards;
         }
 
         .animate-fade-in-up-delay-1 {
-          animation: fadeInUp 1.2s ease-out 0.2s both;
+          animation: fadeInUp 0.8s ease-out 0.1s both;
         }
 
         .animate-fade-in-up-delay-2 {
-          animation: fadeInUp 1.5s ease-out 0.4s both;
+          animation: fadeInUp 0.8s ease-out 0.2s both;
         }
 
         .animate-fade-in-up-delay-3 {
-          animation: fadeInUp 1s ease-out 0.6s both;
+          animation: fadeInUp 0.8s ease-out 0.3s both;
         }
 
         .animate-fade-in-up-delay-4 {
-          animation: fadeInUp 1s ease-out 0.8s both;
+          animation: fadeInUp 0.8s ease-out 0.4s both;
         }
 
         .animate-fade-in-delay-5 {
-          animation: fadeIn 1s ease-out 1.2s both;
+          animation: fadeIn 0.8s ease-out 0.6s both;
         }
       `}</style>
     </div>

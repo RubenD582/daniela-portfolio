@@ -1,18 +1,23 @@
 import React, { useState, useEffect } from 'react';
+import { ArrowRight } from 'lucide-react';
 
 const AllServicesPage = () => {
-  const [isVisible, setIsVisible] = useState({});
   const [animatedItems, setAnimatedItems] = useState(new Set());
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsVisible({
-        header: true,
-        services: true
-      });
-    }, 100);
-    return () => clearTimeout(timer);
-  }, []);
+  // Function to generate WhatsApp booking link
+  const generateWhatsAppLink = (serviceName, price, priceNote = "") => {
+    const phoneNumber = "27661043677";
+    const message = `Hey Daniela!
+
+I'm interested in booking the ${serviceName} service for ${price}${priceNote ? ` ${priceNote}` : ''}
+
+Could we please schedule an appointment? Let me know your available times.
+
+Thank you!`;
+    
+    const encodedMessage = encodeURIComponent(message);
+    return `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+  };
 
   // Intersection Observer for service items
   useEffect(() => {
@@ -28,17 +33,22 @@ const AllServicesPage = () => {
         });
       },
       {
-        threshold: 0.1,
+        threshold: 0.6,
         rootMargin: '50px'
       }
     );
 
-    // Observe all service items
-    const serviceItems = document.querySelectorAll('[data-item-id]');
-    serviceItems.forEach(item => observer.observe(item));
+    // Small delay to ensure DOM is ready
+    const timer = setTimeout(() => {
+      const serviceItems = document.querySelectorAll('[data-item-id]');
+      serviceItems.forEach(item => observer.observe(item));
+    }, 100);
 
-    return () => observer.disconnect();
-  }, [isVisible.services]);
+    return () => {
+      clearTimeout(timer);
+      observer.disconnect();
+    };
+  }, []);
 
   const serviceCategories = [
     {
@@ -133,12 +143,12 @@ const AllServicesPage = () => {
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
-      <div className={`text-center py-32 mt-20 transition-all duration-1000 ${isVisible.header ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+      <div className={`text-center py-32 mt-20 transition-all duration-1000 opacity-100 translate-y-0`}>
         <div className="max-w-6xl mx-auto px-6">
           <h1 className="text-4xl md:text-5xl font-light text-stone-900 mb-8">
             Nail Services
           </h1>
-          <p className="text-stone-600 font-light leading-relaxed font-montserrat">
+          <p className="text-stone-600 font-light leading-relaxed font-sans">
             Professional nail preparation, cuticle care, shaping, filing, buffing, and application with premium products. 
             Each service includes meticulous attention to detail and personalized care for optimal results.
           </p>
@@ -170,19 +180,21 @@ const AllServicesPage = () => {
               <div className="space-y-8">
                 {category.services.map((service, serviceIndex) => {
                   const itemId = `service-${categoryIndex}-${serviceIndex}`;
-                  const delay = serviceIndex * 150; // Stagger animations
                   
                   return (
-                    <div 
+                    <a 
                       key={serviceIndex}
                       data-item-id={itemId}
-                      className={`transition-all duration-1000 ease-out ${
+                      href={generateWhatsAppLink(service.name, service.price, service.priceNote)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`block p-6 border border-transparent hover:border-stone-300 transition-all duration-300 ease-out cursor-pointer ${
                         animatedItems.has(itemId) 
                           ? 'opacity-100 translate-y-0' 
                           : 'opacity-0 translate-y-4'
                       }`}
                       style={{
-                        transitionDelay: animatedItems.has(itemId) ? `${delay}ms` : '0ms'
+                        transitionDelay: animatedItems.has(itemId) ? '0ms' : `${serviceIndex * 150}ms`
                       }}
                     >
                       <div className="mb-2">
@@ -191,10 +203,13 @@ const AllServicesPage = () => {
                           <span className="text-sm text-stone-600 ml-2">{service.priceNote}</span>
                         )}
                       </div>
-                      <h3 className="text-lg text-stone-900 mb-3 uppercase tracking-wide">
-                        {service.name}
-                      </h3>
-                      <p className="text-stone-700 font-light leading-relaxed mb-4 font-montserrat text-sm">
+                      <div className="flex justify-between items-center mb-3">
+                        <h3 className="text-lg text-stone-900 uppercase tracking-wide">
+                          {service.name}
+                        </h3>
+                        <ArrowRight size={18} className="text-stone-400" />
+                      </div>
+                      <p className="text-stone-600 font-light leading-relaxed mb-4 font-montserrat text-sm">
                         {service.description}
                       </p>
                       {service.note && (
@@ -202,7 +217,7 @@ const AllServicesPage = () => {
                           {service.note}
                         </p>
                       )}
-                    </div>
+                    </a>
                   );
                 })}
               </div>
@@ -221,16 +236,24 @@ const AllServicesPage = () => {
         >
           <div className="text-center">
             <h3 className="text-2xl font-light text-stone-900 mb-4">
-              Ready to Book Your Appointment?
+              Have Questions About Our Services?
             </h3>
             <p className="text-stone-600 font-light mb-8">
-              Contact me to schedule your nail service or ask any questions about treatments.
+              Contact me for consultations, custom requests, or any questions about treatments.
             </p>
             <div className="space-y-4">
               <div>
                 <a 
+                  href={generateWhatsAppLink("General Consultation", "Free", "")}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block bg-stone-900 text-white px-8 py-3 hover:bg-stone-800 transition-colors duration-300 font-light mr-4"
+                >
+                  Chat on WhatsApp
+                </a>
+                <a 
                   href="tel:0661043677" 
-                  className="inline-block bg-stone-900 text-white px-8 py-3 hover:bg-stone-800 transition-colors duration-300 font-light"
+                  className="inline-block bg-stone-100 text-stone-900 px-8 py-3 hover:bg-stone-200 transition-colors duration-300 font-light"
                 >
                   Call +27 66 104 3677
                 </a>

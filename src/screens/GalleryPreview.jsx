@@ -24,6 +24,11 @@ const GalleryPreview = ({ isVisible = {} }) => {
   const [availableImages, setAvailableImages] = useState([]);
   const [galleryItems, setGalleryItems] = useState([]);
   const [isLoadingImageList, setIsLoadingImageList] = useState(true);
+  const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
+  const [isHovering, setIsHovering] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
+  const [previewImage, setPreviewImage] = useState(null);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   
   const storage = getStorage(firebaseApp);
   const navigate = useNavigate();
@@ -49,6 +54,45 @@ const GalleryPreview = ({ isVisible = {} }) => {
     navigate('/designs');
   };
   
+  // Handle image click to open preview
+  const handleImageClick = (item) => {
+    if (imageURLs[item]) {
+      setPreviewImage({
+        url: imageURLs[item],
+        id: item
+      });
+      setIsPreviewOpen(true);
+      // Prevent body scroll when modal is open
+      document.body.style.overflow = 'hidden';
+    }
+  };
+  
+  // Close preview modal
+  const closePreview = () => {
+    setIsPreviewOpen(false);
+    setPreviewImage(null);
+    // Restore body scroll
+    document.body.style.overflow = 'unset';
+  };
+  
+  // Handle mouse move for custom cursor
+  const handleMouseMove = (e) => {
+    if (!isDesktop) return;
+    setCursorPosition({ x: e.clientX, y: e.clientY });
+  };
+  
+  // Handle mouse enter on gallery items
+  const handleMouseEnter = () => {
+    if (!isDesktop) return;
+    setIsHovering(true);
+  };
+  
+  // Handle mouse leave on gallery items
+  const handleMouseLeave = () => {
+    if (!isDesktop) return;
+    setIsHovering(false);
+  };
+  
   // Function to extract image number from filename (e.g., "1.jpg" -> 1)
   const extractImageNumber = (filename) => {
     const match = filename.match(/^(\d+)\./);
@@ -69,6 +113,45 @@ const GalleryPreview = ({ isVisible = {} }) => {
     
     return shuffled.slice(0, Math.min(itemsToShow, shuffled.length));
   };
+
+  const handleImageLoad = (itemId) => {
+    setLoadedImages(prev => new Set([...prev, itemId]));
+  };
+
+  const handleImageError = (itemId) => {
+    setLoadedImages(prev => new Set([...prev, itemId])); // Stop showing skeleton even on error
+  };
+  
+  const refreshGallery = () => {
+    if (availableImages.length > 0) {
+      setGalleryItems(generateRandomItems(availableImages));
+      setLoadedImages(new Set()); // Reset loaded images
+    }
+  };
+
+  // Check if device is desktop
+  useEffect(() => {
+    const checkIsDesktop = () => {
+      setIsDesktop(window.innerWidth >= 1024); // lg breakpoint
+    };
+    
+    checkIsDesktop();
+    window.addEventListener('resize', checkIsDesktop);
+    
+    return () => window.removeEventListener('resize', checkIsDesktop);
+  }, []);
+  
+  // Handle escape key to close modal
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === 'Escape' && isPreviewOpen) {
+        closePreview();
+      }
+    };
+    
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [isPreviewOpen]);
 
   // Fetch available images from Firebase Storage
   useEffect(() => {
@@ -193,21 +276,6 @@ const GalleryPreview = ({ isVisible = {} }) => {
     fetchImageURLs();
   }, [galleryItems]);
 
-  const handleImageLoad = (itemId) => {
-    setLoadedImages(prev => new Set([...prev, itemId]));
-  };
-
-  const handleImageError = (itemId) => {
-    setLoadedImages(prev => new Set([...prev, itemId])); // Stop showing skeleton even on error
-  };
-  
-  const refreshGallery = () => {
-    if (availableImages.length > 0) {
-      setGalleryItems(generateRandomItems(availableImages));
-      setLoadedImages(new Set()); // Reset loaded images
-    }
-  };
-
   // Show loading state while fetching image list
   if (isLoadingImageList) {
     return (
@@ -271,8 +339,12 @@ const GalleryPreview = ({ isVisible = {} }) => {
           {galleryItems.map((item, idx) => (
             <div
               key={item}
-              className={`aspect-square group cursor-pointer overflow-hidden rounded-lg ${isVisible?.gallery ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+              className={`aspect-square group cursor-pointer overflow-hidden rounded-lg ${isDesktop ? 'cursor-none' : ''} ${isVisible?.gallery ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
               style={{ transitionDelay: `${idx * 100}ms` }}
+              onMouseMove={handleMouseMove}
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+              onClick={() => handleImageClick(item)}
             >
               <div className="relative w-full h-full">
                 {/* Skeleton/Placeholder - shown until image loads */}
@@ -314,6 +386,61 @@ const GalleryPreview = ({ isVisible = {} }) => {
           ))}
         </div>
         
+        {/* Image Preview Modal */}
+        {isPreviewOpen && previewImage && (
+          <div 
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-modal-fade-in"
+            onClick={closePreview}
+          >
+            {/* Backdrop */}
+            <div className="absolute inset-0 bg-black bg-opacity-90 animate-backdrop-fade-in"></div>
+            
+            {/* Modal Content */}
+            <div 
+              className="relative animate-modal-scale-in"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Close Button */}
+              <button
+                onClick={closePreview}
+                className="absolute -top-12 right-0 text-white hover:text-gray-300 transition-colors z-10"
+              >
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+              
+              {/* Polaroid Frame */}
+              <div className="bg-white p-4 pb-16 shadow-xl transform rotate-1">
+                {/* Image */}
+                <div className="w-80 h-80 overflow-hidden flex items-center justify-center">
+                  <img
+                    src={previewImage.url}
+                    alt={`Gallery ${previewImage.id}`}
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+        
+        {/* Custom Cursor */}
+        {isDesktop && isHovering && (
+          <div
+            className="fixed pointer-events-none z-50"
+            style={{
+              left: cursorPosition.x,
+              top: cursorPosition.y,
+              transform: 'translate(-50%, -50%)'
+            }}
+          >
+            <div className="bg-black bg-opacity-60 text-white w-16 h-16 rounded-full text-sm uppercase tracking-wider flex items-center justify-center animate-cursor-grow font-sans font-medium">
+              View
+            </div>
+          </div>
+        )}
+        
         <div className="flex justify-center mt-12 space-x-4">
           <button 
             onClick={handleGalleryClick} 
@@ -334,8 +461,64 @@ const GalleryPreview = ({ isVisible = {} }) => {
           }
         }
         
+        @keyframes cursor-grow {
+          0% {
+            transform: scale(0);
+            opacity: 0;
+          }
+          100% {
+            transform: scale(1);
+            opacity: 1;
+          }
+        }
+        
+        @keyframes modal-fade-in {
+          0% {
+            opacity: 0;
+          }
+          100% {
+            opacity: 1;
+          }
+        }
+        
+        @keyframes backdrop-fade-in {
+          0% {
+            opacity: 0;
+          }
+          100% {
+            opacity: 1;
+          }
+        }
+        
+        @keyframes modal-scale-in {
+          0% {
+            transform: scale(0.8);
+            opacity: 0;
+          }
+          100% {
+            transform: scale(1);
+            opacity: 1;
+          }
+        }
+        
         .animate-shimmer {
           animation: shimmer 2s infinite;
+        }
+        
+        .animate-cursor-grow {
+          animation: cursor-grow 0.3s ease-out forwards;
+        }
+        
+        .animate-modal-fade-in {
+          animation: modal-fade-in 0.3s ease-out forwards;
+        }
+        
+        .animate-backdrop-fade-in {
+          animation: backdrop-fade-in 0.3s ease-out forwards;
+        }
+        
+        .animate-modal-scale-in {
+          animation: modal-scale-in 0.4s ease-out forwards;
         }
       `}</style>
     </section>

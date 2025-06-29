@@ -164,7 +164,7 @@ export default function Navbar() {
               Contact
             </button>
             <a
-              href="https://wa.me/27661043677"
+              href="https://wa.me/27661043677?text=Hi%20Daniela!%20I'd%20like%20to%20book%20an%20appointment.%20My%20name%20is%20____%20and%20I'm%20interested%20in%20____."
               target="_blank"
               rel="noopener noreferrer"
               className="bg-stone-900 text-white px-6 py-2 text-sm font-light hover:bg-stone-800 transition-colors uppercase"
@@ -267,7 +267,7 @@ export default function Navbar() {
             {/* Book Now Button */}
             <div className="p-6 border-t border-stone-100">
               <a
-                href="https://wa.me/27661043677"
+                href="https://wa.me/27661043677?text=Hi%20Daniela!%20I'd%20like%20to%20book%20an%20appointment.%20My%20name%20is%20____%20and%20I'm%20interested%20in%20____."
                 onClick={() => setIsMobileMenuOpen(false)}
                 target="_blank"
                 rel="noopener noreferrer"

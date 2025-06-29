@@ -1,20 +1,8 @@
 // src/pages/Designs.jsx
 import React, { useState, useEffect } from "react";
-import {
-  X,
-  Heart,
-  Eye,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
-
+import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { initializeApp } from "firebase/app";
-import { getDatabase, ref, onValue, runTransaction } from "firebase/database";
-import {
-  getStorage,
-  ref as storageRef,
-  getDownloadURL,
-} from "firebase/storage";
+import { getStorage, ref as storageRef, getDownloadURL, listAll } from "firebase/storage";
 
 // Firebase config
 export const firebaseConfig = {
@@ -28,438 +16,295 @@ export const firebaseConfig = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
 
-const firebaseApp = initializeApp(firebaseConfig);
-const db = getDatabase(firebaseApp);
-const storage = getStorage(firebaseApp);
+// Initialize Firebase
+let firebaseApp;
+let storage;
 
-// Individual Design Card Component
-const DesignCard = ({ 
-  design, 
-  index, 
-  imageURL, 
-  favorites, 
-  likesMap, 
-  handleHeartClick, 
-  openLightbox
-}) => {
+try {
+  firebaseApp = initializeApp(firebaseConfig);
+  storage = getStorage(firebaseApp);
+} catch (error) {
+  console.error("Firebase initialization error:", error);
+}
+
+// Enhanced Design Card
+const DesignCard = ({ design, index, imageURL, openLightbox, inView }) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
-  const [naturalDimensions, setNaturalDimensions] = useState({ width: 0, height: 0 });
 
-  const handleImageLoad = (e) => {
-    setImageLoaded(true);
-    setNaturalDimensions({
-      width: e.target.naturalWidth,
-      height: e.target.naturalHeight
-    });
-  };
-
+  const handleImageLoad = () => setImageLoaded(true);
   const handleImageError = () => {
     setImageError(true);
     setImageLoaded(true);
   };
 
-  // Calculate dynamic height for masonry effect
-  const getDynamicHeight = () => {
-    if (!imageLoaded || imageError || !naturalDimensions.width || !naturalDimensions.height) {
-      return 300; // Default height
-    }
-    
-    // Base width for calculation (assuming 300px column width)
-    const baseWidth = 300;
-    const aspectRatio = naturalDimensions.height / naturalDimensions.width;
-    
-    // Calculate height maintaining aspect ratio, with some constraints
-    let height = baseWidth * aspectRatio;
-    
-    // Add some randomness for more variety (optional)
-    const variance = Math.random() * 40 - 20; // -20 to +20px
-    height += variance;
-    
-    // Constrain height between reasonable bounds
-    return Math.max(200, Math.min(500, height));
-  };
+  const cardClasses = "group cursor-pointer relative overflow-hidden bg-white border border-gray-100 transition-all duration-300 break-inside-avoid mb-6 hover:shadow-lg";
 
-  const dynamicHeight = getDynamicHeight();
+  const imageClasses = "w-full h-full object-cover transition-all duration-500 group-hover:scale-110";
 
   return (
     <div
-      className="group cursor-pointer break-inside-avoid mb-3 lg:mb-6"
+      className={cardClasses}
+      data-index={index}
       style={{
+        animationName: inView ? "slideInUp" : "none",
+        animationDuration: "0.8s",
+        animationTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
+        animationFillMode: "forwards",
         animationDelay: `${index * 50}ms`,
-        animation: "fadeInUp 0.6s ease-out forwards",
+        opacity: inView ? 1 : 0,
+        transform: inView ? "translateY(0)" : "translateY(30px)"
       }}
     >
-      <div className="relative bg-white hover:border-black transition-all duration-300 overflow-hidden">
-        <div 
-          className="relative overflow-hidden"
-          style={{ height: imageLoaded ? 'auto' : `${dynamicHeight}px` }}
-        >
-          {/* Skeleton/Placeholder */}
-          {!imageLoaded && (
-            <div 
-              className="w-full bg-gradient-to-br from-stone-300 via-stone-200 to-stone-300 animate-pulse" 
-              style={{ height: `${dynamicHeight}px` }}
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-stone-300 to-transparent animate-shimmer transform -skew-x-12 w-full h-full"></div>
-            </div>
-          )}
-          
-          {/* Actual Image */}
-          {imageURL && (
-            <img
-              src={imageURL}
-              alt={design.title}
-              className={`w-full h-auto object-cover transition-all duration-500 group-hover:scale-105 ${
-                imageLoaded ? 'opacity-100' : 'opacity-0 absolute inset-0'
-              }`}
-              loading="lazy"
-              onLoad={handleImageLoad}
-              onError={handleImageError}
-              onClick={() => openLightbox(design)}
-              style={imageLoaded ? {} : { height: `${dynamicHeight}px` }}
-            />
-          )}
+      <div className="relative overflow-hidden h-full">
+        {/* Loading placeholder */}
+        {!imageLoaded && (
+          <div className="w-full h-72 bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
+            <div className="w-8 h-8 border-2 border-gray-300 border-t-black rounded-full animate-spin"></div>
+          </div>
+        )}
+        
+        {/* Main image */}
+        {imageURL ? (
+          <img
+            src={imageURL}
+            alt={design.title}
+            className={`${imageClasses} ${
+              imageLoaded ? 'opacity-100' : 'opacity-0 absolute inset-0'
+            }`}
+            loading="lazy"
+            onLoad={handleImageLoad}
+            onError={handleImageError}
+            onClick={() => openLightbox(design)}
+          />
+        ) : (
+          <div className="w-full h-72 bg-gray-50 flex items-center justify-center">
+            <span className="text-gray-400 text-sm">Loading...</span>
+          </div>
+        )}
 
-          {/* Error State */}
-          {imageError && (
-            <div 
-              className="w-full bg-stone-100 flex items-center justify-center"
-              style={{ height: `${dynamicHeight}px` }}
-            >
-              <div className="text-stone-400 text-center">
-                <div className="text-2xl mb-2">✨</div>
-                <div className="text-xs">Design #{design.id}</div>
-              </div>
+        {/* Error state */}
+        {imageError && (
+          <div className="w-full h-72 bg-gray-50 flex items-center justify-center">
+            <div className="text-gray-400 text-center">
+              <div className="text-lg mb-1">—</div>
+              <div className="text-xs">Design #{design.id}</div>
             </div>
-          )}
-
-          {/* Hover Overlay */}
-          {imageLoaded && !imageError && (
-            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">
-              <div className="flex space-x-3">
-                <button
-                  onClick={(e) => handleHeartClick(design.id, e)}
-                  className={`p-3 rounded-full transition-all duration-200 ${
-                    favorites.has(design.id)
-                      ? "bg-white text-black"
-                      : "bg-white/20 text-white hover:bg-white hover:text-black"
-                  }`}
-                >
-                  <Heart
-                    size={18}
-                    fill={favorites.has(design.id) ? "currentColor" : "none"}
-                  />
-                </button>
-                <button
-                  onClick={(e) => openLightbox(design, e)}
-                  className="p-3 rounded-full bg-white/20 text-white hover:bg-white hover:text-black transition-all duration-200"
-                >
-                  <Eye size={18} />
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-
-        <div className="pt-3"></div>
+          </div>
+        )}
       </div>
     </div>
   );
 };
 
 export default function Designs() {
-  const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedImage, setSelectedImage] = useState(null);
-  const [visibleCount, setVisibleCount] = useState(12);
-
-  // Local favorites from localStorage
-  const [favorites, setFavorites] = useState(() => {
-    try {
-      const stored = window.localStorage.getItem("likedDesigns");
-      return stored ? new Set(JSON.parse(stored)) : new Set();
-    } catch (e) {
-      return new Set();
-    }
-  });
-
-  // Likes map from Realtime Database
-  const [likesMap, setLikesMap] = useState({});
-  const [likesLoaded, setLikesLoaded] = useState(false);
-
-  // Hold the fetched URLs for each design
+  const [visibleCount, setVisibleCount] = useState(20);
   const [imageURLs, setImageURLs] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [designs, setDesigns] = useState([]);
+  const [inViewItems, setInViewItems] = useState(new Set());
 
-  // Static design metadata
-  const designs = [
-    { id: 1, title: "Classic French", category: "classic", description: "Timeless elegance with clean lines" },
-    { id: 2, title: "Nude Sophistication", category: "classic", description: "Minimalist beauty in natural tones" },
-    { id: 3, title: "Black & White", category: "classic", description: "Monochrome perfection" },
-    { id: 4, title: "Geometric Lines", category: "modern", description: "Contemporary angular design" },
-    { id: 5, title: "Abstract Art", category: "artistic", description: "Creative expression on nails" },
-    { id: 6, title: "Floral Elegance", category: "feminine", description: "Delicate botanical designs" },
-    { id: 7, title: "Bold Statement", category: "bold", description: "Eye-catching dramatic style" },
-    { id: 8, title: "Luxury Gold", category: "luxury", description: "Premium metallic accents" },
-    { id: 9, title: "Modern Minimal", category: "modern", description: "Clean contemporary aesthetic" },
-    { id: 10, title: "Artistic Expression", category: "artistic", description: "Unique creative design" },
-    { id: 11, title: "Feminine Touch", category: "feminine", description: "Soft and romantic style" },
-    { id: 12, title: "Bold Contrast", category: "bold", description: "High-impact visual design" },
-    { id: 13, title: "Luxury Pearl", category: "luxury", description: "Elegant premium finish" },
-    { id: 14, title: "Classic Elegance", category: "classic", description: "Traditional refined beauty" },
-  ];
+  const visibleDesigns = designs.slice(0, visibleCount);
 
-  // Filter based on category or "liked"
-  let filteredDesigns = [];
-  if (selectedCategory === "all") {
-    filteredDesigns = designs;
-  } else if (selectedCategory === "liked") {
-    filteredDesigns = designs.filter((d) => favorites.has(d.id));
-  } else {
-    filteredDesigns = designs.filter((d) => d.category === selectedCategory);
-  }
-  const visibleDesigns = filteredDesigns.slice(0, visibleCount);
-
-  // Initialize data fetching
+  // Intersection Observer for scroll animations
   useEffect(() => {
-    // Subscribe to likes
-    const allLikesRef = ref(db, "likes");
-    const unsubscribeLikes = onValue(allLikesRef, (snapshot) => {
-      const data = snapshot.val() || {};
-      setLikesMap(data);
-      setLikesLoaded(true);
-    });
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const index = parseInt(entry.target.dataset.index);
+            setInViewItems(prev => new Set([...prev, index]));
+          }
+        });
+      },
+      { threshold: 0.1, rootMargin: '50px' }
+    );
 
-    // Fetch image URLs
-    const fetchImageURLs = async () => {
-      // Fetch URLs for currently visible designs first
-      const priorityDesigns = visibleDesigns.slice(0, 8);
-      
-      for (const design of priorityDesigns) {
-        const imgRef = storageRef(storage, `Designs/${design.id}.jpg`);
-        try {
-          const downloadUrl = await getDownloadURL(imgRef);
-          setImageURLs(prev => ({ ...prev, [design.id]: downloadUrl }));
-        } catch (err) {
-          console.error(`Failed to fetch download URL for design ${design.id}:`, err);
-        }
+    const elements = document.querySelectorAll('[data-index]');
+    elements.forEach(el => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, [visibleDesigns]);
+
+  // Discover and fetch all images (your original Firebase logic)
+  useEffect(() => {
+    const discoverAndFetchImages = async () => {
+      if (!storage) {
+        setLoading(false);
+        return;
       }
-      
-      // Then fetch remaining URLs in background
-      const remainingDesigns = designs.filter(d => !priorityDesigns.includes(d));
-      for (const design of remainingDesigns) {
-        const imgRef = storageRef(storage, `Designs/${design.id}.jpg`);
-        try {
-          const downloadUrl = await getDownloadURL(imgRef);
-          setImageURLs(prev => ({ ...prev, [design.id]: downloadUrl }));
-        } catch (err) {
-          console.error(`Failed to fetch download URL for design ${design.id}:`, err);
-        }
+
+      try {
+        const designsRef = storageRef(storage, 'Designs/');
+        const result = await listAll(designsRef);
+        
+        const discoveredDesigns = result.items.map((item, index) => {
+          const filename = item.name;
+          const id = parseInt(filename.split('.')[0]) || index + 1;
+          
+          return {
+            id: id,
+            title: `Design ${id}`,
+            storageRef: item
+          };
+        });
+
+        discoveredDesigns.sort((a, b) => a.id - b.id);
+        setDesigns(discoveredDesigns);
+
+        const urlPromises = discoveredDesigns.map(async (design) => {
+          try {
+            const downloadUrl = await getDownloadURL(design.storageRef);
+            setImageURLs(prev => ({ ...prev, [design.id]: downloadUrl }));
+          } catch (err) {
+            console.warn(`Failed to get URL for design ${design.id}`);
+          }
+        });
+
+        await Promise.all(urlPromises);
+        setLoading(false);
+        
+      } catch (error) {
+        console.error("Error discovering images:", error);
+        setLoading(false);
       }
     };
 
-    fetchImageURLs();
-
-    return () => {
-      unsubscribeLikes();
-    };
+    discoverAndFetchImages();
   }, []);
-
-  // Helper to increase/decrease likes in Firebase
-  const changeLikes = (id, delta) => {
-    const likesRef = ref(db, `likes/${id}`);
-    runTransaction(likesRef, (current) => {
-      const currentVal = current || 0;
-      const nextVal = currentVal + delta;
-      return nextVal < 0 ? 0 : nextVal;
-    }).catch((err) => {
-      console.error("Failed to change likes:", err);
-    });
-  };
-
-  // Toggle favorite in localStorage + update Firebase
-  const handleHeartClick = (id, e) => {
-    e.stopPropagation();
-    if (favorites.has(id)) {
-      changeLikes(id, -1);
-      setFavorites((prev) => {
-        const copy = new Set(prev);
-        copy.delete(id);
-        window.localStorage.setItem(
-          "likedDesigns",
-          JSON.stringify(Array.from(copy))
-        );
-        return copy;
-      });
-    } else {
-      changeLikes(id, +1);
-      setFavorites((prev) => {
-        const copy = new Set(prev);
-        copy.add(id);
-        window.localStorage.setItem(
-          "likedDesigns",
-          JSON.stringify(Array.from(copy))
-        );
-        return copy;
-      });
-    }
-  };
 
   const openLightbox = (design, e) => {
     if (e) e.stopPropagation();
     setSelectedImage(design);
   };
 
-  const closeLightbox = () => {
-    setSelectedImage(null);
-  };
+  const closeLightbox = () => setSelectedImage(null);
 
   const navigateLightbox = (direction) => {
-    const currentIndex = filteredDesigns.findIndex(
-      (d) => d.id === selectedImage.id
-    );
+    const currentIndex = designs.findIndex(d => d.id === selectedImage.id);
     let newIndex;
     if (direction === "next") {
-      newIndex = (currentIndex + 1) % filteredDesigns.length;
+      newIndex = (currentIndex + 1) % designs.length;
     } else {
-      newIndex =
-        currentIndex - 1 < 0 ? filteredDesigns.length - 1 : currentIndex - 1;
+      newIndex = currentIndex - 1 < 0 ? designs.length - 1 : currentIndex - 1;
     }
-    setSelectedImage(filteredDesigns[newIndex]);
+    setSelectedImage(designs[newIndex]);
   };
 
-  const loadMore = () => {
-    setVisibleCount((prev) => prev + 8);
-  };
+  const loadMore = () => setVisibleCount(prev => prev + 20);
 
-  // Show initial loading
-  const showInitialLoading = !likesLoaded;
+  return (
+    <div className="min-h-screen bg-white pt-[70px]">
+      {/* Enhanced hero header */}
+      <div className="relative overflow-hidden bg-gradient-to-b from-gray-50 to-white">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-gray-100 via-white to-white"></div>
+        <div className="relative text-center mt-20">
+          <div className="max-w-4xl mx-auto px-6">
+            {loading ? (
+              // Skeleton loading for title and subtitle
+              <>
+                <div className="h-10 w-64 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 rounded-lg mb-4 animate-pulse bg-[length:200%_100%] animate-shimmer mx-auto"></div>
+                <div className="h-6 w-80 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 rounded-lg max-w-md mx-auto animate-pulse bg-[length:200%_100%] animate-shimmer"></div>
+              </>
+            ) : (
+              // Actual content
+              <>
+                <h2 className="text-4xl md:text-5xl font-extralight text-stone-900 mb-3">
+                  Portfolio Designs
+                </h2>
+                <p className="text-gray-600 text-lg font-light tracking-wide font-sans">
+                  A curated collection of {designs.length} creative works
+                </p>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
 
-  if (showInitialLoading) {
-    return (
-      <div className="min-h-screen bg-white pt-[70px]">
-        <div className="max-w-7xl mx-auto px-6 py-8">
-          <div className="columns-2 sm:columns-2 lg:columns-3 xl:columns-4 gap-6">
-            {Array.from({ length: 12 }).map((_, idx) => (
-              <div key={idx} className="group cursor-pointer break-inside-avoid mb-3 lg:mb-6">
-                <div className="relative bg-white overflow-hidden">
-                  <div 
-                    className="relative overflow-hidden bg-gradient-to-br from-stone-300 via-stone-200 to-stone-300 animate-pulse" 
-                    style={{ height: `${200 + Math.random() * 200}px` }}
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent animate-shimmer transform -skew-x-12 w-full h-full"></div>
-                  </div>
-                  <div className="pt-3"></div>
+      {/* Gallery */}
+      <div className="max-w-7xl mx-auto px-6 py-16">
+        {loading ? (
+          // Loading skeleton gallery
+          <div className="columns-2 sm:columns-3 lg:columns-4 xl:columns-5 gap-6">
+            {Array.from({ length: 20 }).map((_, idx) => (
+              <div key={idx} className="break-inside-avoid mb-6">
+                <div className="bg-white border border-gray-100 overflow-hidden">
+                  <div className="w-full h-72 bg-gradient-to-br from-gray-100 to-gray-200 animate-pulse"></div>
                 </div>
               </div>
             ))}
           </div>
-        </div>
-      </div>
-    );
-  }
+        ) : (
+          // Actual gallery
+          <div className="columns-2 sm:columns-3 lg:columns-4 xl:columns-5 gap-6">
+            {visibleDesigns.map((design, index) => (
+              <DesignCard
+                key={design.id}
+                design={design}
+                index={index}
+                imageURL={imageURLs[design.id]}
+                openLightbox={openLightbox}
+                inView={inViewItems.has(index)}
+              />
+            ))}
+          </div>
+        )}
 
-  return (
-    <div className="min-h-screen bg-white pt-[70px]">
-      {/* Gallery */}
-      <div className="max-w-7xl mx-auto px-6 py-8">
-        <div className="columns-2 sm:columns-2 lg:columns-3 xl:columns-4 gap-6">
-          {visibleDesigns.map((design, index) => (
-            <DesignCard
-              key={design.id}
-              design={design}
-              index={index}
-              imageURL={imageURLs[design.id]}
-              favorites={favorites}
-              likesMap={likesMap}
-              handleHeartClick={handleHeartClick}
-              openLightbox={openLightbox}
-            />
-          ))}
-        </div>
-
-        {/* Load More Button */}
-        {visibleCount < filteredDesigns.length && (
-          <div className="text-center mt-12">
+        {/* Enhanced load more */}
+        {!loading && visibleCount < designs.length && (
+          <div className="text-center mt-16">
             <button
               onClick={loadMore}
-              className="px-8 py-3 border border-black text-black hover:bg-black hover:text-white transition-all duration-300 font-medium"
+              className="group relative px-12 py-4 border-2 border-black text-black hover:text-white transition-all duration-500 text-sm uppercase tracking-widest font-medium overflow-hidden"
             >
-              Load More ({filteredDesigns.length - visibleCount} remaining)
+              <span className="absolute inset-0 bg-black transform -translate-x-full group-hover:translate-x-0 transition-transform duration-500"></span>
+              <span className="relative z-10">
+                Load More ({designs.length - visibleCount} remaining)
+              </span>
             </button>
-          </div>
-        )}
-
-        {filteredDesigns.length === 0 && (
-          <div className="text-center py-16">
-            <div className="text-gray-400 mb-4">
-              <Heart size={48} className="mx-auto mb-4" />
-              <h3 className="text-lg font-medium mb-2">No designs found</h3>
-              <p className="text-sm">Try selecting a different category or add some designs to your favorites.</p>
-            </div>
           </div>
         )}
       </div>
 
-      {/* Lightbox Modal */}
+      {/* Premium lightbox */}
       {selectedImage && (
-        <div className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4">
-          <div className="relative max-w-4xl w-full">
-            {/* Close Button */}
-            <button
-              onClick={closeLightbox}
-              className="absolute top-0 right-0 text-white hover:text-gray-300 transition-colors duration-200 z-20"
-            >
-              <X size={24} />
-            </button>
+        <div 
+          onClick={closeLightbox}
+          className="fixed inset-0 bg-white/70 backdrop-blur-sm z-50 flex items-center justify-center">
+          {/* Close button */}
+          <button
+            onClick={closeLightbox}
+            className="absolute top-8 right-8 w-12 h-12 rounded-full bg-gray-100 hover:bg-black hover:text-white transition-all duration-300 flex items-center justify-center z-20"
+          >
+            <X size={20} />
+          </button>
 
-            {/* Navigation Buttons */}
-            <button
-              onClick={() => navigateLightbox("prev")}
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-white hover:text-gray-300 transition-colors duration-200 bg-black/50 rounded-full p-3 hover:bg-black/70 z-20"
-            >
-              <ChevronLeft size={20} />
-            </button>
-            <button
-              onClick={() => navigateLightbox("next")}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:text-gray-300 transition-colors duration-200 bg-black/50 rounded-full p-3 hover:bg-black/70 z-20"
-            >
-              <ChevronRight size={20} />
-            </button>
+          {/* Navigation */}
+          <button
+            onClick={() => navigateLightbox("prev")}
+            className="absolute left-8 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-gray-100/25 hover:bg-black/25 hover:text-white transition-all duration-300 flex items-center justify-center z-20"
+          >
+            <ChevronLeft size={20} />
+          </button>
+          <button
+            onClick={() => navigateLightbox("next")}
+            className="absolute right-8 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-gray-100/25 hover:bg-black/25 hover:text-white transition-all duration-300 flex items-center justify-center z-20"
+          >
+            <ChevronRight size={20} />
+          </button>
 
-            {/* Image Container */}
-            <div className="bg-white p-8 mx-auto max-w-2xl">
-              <img
-                src={imageURLs[selectedImage.id]}
-                alt={selectedImage.title}
-                className="w-full h-auto max-h-[70vh] object-contain"
-              />
-            </div>
-
-            {/* Image Info */}
-            <div className="mt-6 text-center">
-              <h2 className="text-white text-xl font-medium mb-2">
-                {selectedImage.title || `Design #${selectedImage.id}`}
-              </h2>
-              <p className="text-gray-300 text-sm mb-4">
-                {selectedImage.description}
-              </p>
-              <div className="flex items-center justify-center">
-                <button
-                  onClick={(e) => handleHeartClick(selectedImage.id, e)}
-                  className={`flex items-center space-x-2 px-4 py-2 rounded transition-colors duration-200 ${
-                    favorites.has(selectedImage.id)
-                      ? "bg-white text-black"
-                      : "bg-white/20 text-white hover:bg-white hover:text-black"
-                  }`}
-                >
-                  <Heart
-                    size={16}
-                    fill={favorites.has(selectedImage.id) ? "currentColor" : "none"}
-                  />
-                  <span className="text-sm font-medium">
-                    {(likesMap[selectedImage.id] ?? 0)}
-                  </span>
-                </button>
+          {/* Image */}
+          <div className=" mx-auto px-20 text-center">
+            <img
+              src={imageURLs[selectedImage.id]}
+              alt={selectedImage.title}
+              className="w-full h-auto max-h-[50vh] object-contain mb-8 shadow-2xl"
+            />
+            
+            <div className="space-y-4">
+              <div className="text-xs uppercase tracking-widest text-black">
+                Design Collection • {new Date().getFullYear()}
               </div>
             </div>
           </div>
@@ -467,10 +312,10 @@ export default function Designs() {
       )}
 
       <style jsx>{`
-        @keyframes fadeInUp {
+        @keyframes slideInUp {
           from {
             opacity: 0;
-            transform: translateY(20px);
+            transform: translateY(30px);
           }
           to {
             opacity: 1;
@@ -480,15 +325,22 @@ export default function Designs() {
         
         @keyframes shimmer {
           0% {
-            transform: translateX(-100%);
+            background-position: -200% 0;
           }
           100% {
-            transform: translateX(100%);
+            background-position: 200% 0;
           }
         }
         
         .animate-shimmer {
           animation: shimmer 2s infinite;
+        }
+        
+        .columns-2 > div,
+        .columns-3 > div,
+        .columns-4 > div,
+        .columns-5 > div {
+          break-inside: avoid;
         }
       `}</style>
     </div>
