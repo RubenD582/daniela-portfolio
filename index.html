@@ -7,6 +7,33 @@
     <!-- Single comprehensive Google Fonts link -->
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Lora:wght@300;400;700&family=Dancing+Script:wght@400;700&family=Montserrat:wght@300;400;500;600&family=Bodoni+Moda:wght@400;500;600;700&display=swap" rel="stylesheet">
     <title>Nails by Dani</title>
+
+    <style>
+      /* Critical CSS to prevent FOUC */
+      html, body {
+        background-color: #ffffff !important;
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+      }
+      
+      #root {
+        background-color: #ffffff !important;
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        width: 100%;
+      }
+      
+      /* Hide content until styles load */
+      .loading-prevent {
+        visibility: hidden;
+      }
+      
+      .loading-prevent.loaded {
+        visibility: visible;
+      }
+    </style>
     <script type="module" crossorigin src="./assets/index-CpPDqkrg.js"></script>
     <link rel="stylesheet" crossorigin href="./assets/index-CpceWtZn.css">
   </head>
