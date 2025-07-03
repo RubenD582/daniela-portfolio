@@ -169,7 +169,7 @@ const ContactSection = () => {
               <button
                 onClick={sendEmail}
                 disabled={isLoading}
-                className="w-full bg-gray-900 text-white p-4 font-light hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full bg-black text-white p-4 font-light hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isLoading ? 'Sending...' : 'Send Email'}
               </button>

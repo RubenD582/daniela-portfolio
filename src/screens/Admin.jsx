@@ -6,6 +6,7 @@ import {
   X,
   Loader,
   Upload,
+  ArrowLeft,
 } from "lucide-react";
 
 import { initializeApp } from "firebase/app";
@@ -16,6 +17,7 @@ import {
   inMemoryPersistence,
   onAuthStateChanged,
   signOut,
+  sendPasswordResetEmail,
 } from "firebase/auth";
 import {
   getDatabase,
@@ -33,7 +35,7 @@ import {
 } from "firebase/storage";
 
 // -------------------------------------------------------------------------------------
-// 1) Firebase configuration (read your keys from .env or however you’re storing them)
+// 1) Firebase configuration (read your keys from .env or however you're storing them)
 // -------------------------------------------------------------------------------------
 export const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -52,7 +54,124 @@ const db = getDatabase(firebaseApp);
 const storage = getStorage(firebaseApp);
 
 // -------------------------------------------------------------------------------------
-// 2) AdminAuth component: requires signing in on every page load; auto-logout after 5m idle
+// 2) ForgotPassword component
+// -------------------------------------------------------------------------------------
+const ForgotPassword = ({ onBack }) => {
+  const [email, setEmail] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
+
+  const handleResetPassword = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
+    setMessage("");
+
+    try {
+      await sendPasswordResetEmail(auth, email);
+      setMessage("Password reset email sent! Check your inbox and spam folder.");
+    } catch (err) {
+      console.error("Password reset error:", err);
+      
+      // Handle specific error codes
+      switch (err.code) {
+        case "auth/user-not-found":
+          setError("No account found with this email address.");
+          break;
+        case "auth/invalid-email":
+          setError("Please enter a valid email address.");
+          break;
+        case "auth/too-many-requests":
+          setError("Too many reset requests. Please try again later.");
+          break;
+        default:
+          setError("Failed to send reset email. Please try again.");
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="mt-20 bg-white flex items-center justify-center">
+      <div className="border border-gray-300 p-6 w-full max-w-sm">
+        <button
+          onClick={onBack}
+          className="mr-2 p-1 hover:bg-gray-100 rounded mb-5"
+        >
+          <ArrowLeft size={16} />
+        </button>
+        <div className="flex items-center mb-4">
+          <h2 className="text-xl font-medium text-gray-900">Reset Password</h2>
+        </div>
+
+        <p className="text-md text-gray-600 mb-12 font-sans">
+          Enter your email address and we'll send you a link to reset your password.
+        </p>
+
+        <form onSubmit={handleResetPassword} className="space-y-4">
+          <div>
+            <label className="block text-md font-medium text-gray-700 mb-1">
+              Email
+            </label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@domain.com"
+              className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:border-gray-500"
+              required
+              disabled={isLoading}
+              autoComplete="username"
+            />
+          </div>
+
+          {error && (
+            <div className="p-2 bg-red-50 border border-red-200 text-red-700 text-sm">
+              {error}
+            </div>
+          )}
+
+          {message && (
+            <div className="p-2 bg-green-50 border border-green-200 text-green-700 text-sm">
+              {message}
+            </div>
+          )}
+
+          <button
+            type="submit"
+            className="w-full bg-black text-white py-2 px-3 hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <span className="flex items-center justify-center">
+                <Loader size={16} className="animate-spin mr-2" />
+                Sending...
+              </span>
+            ) : (
+              "SEND EMAIL"
+            )}
+          </button>
+        </form>
+
+        {message && (
+          <div className="mt-4 pt-4 border-t border-gray-200">
+            <button
+              onClick={onBack}
+              className="text-sm text-gray-600 hover:text-gray-800"
+            >
+              Back to sign in
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// -------------------------------------------------------------------------------------
+// 3) AdminAuth component: requires signing in on every page load; auto-logout after 5m idle
 // -------------------------------------------------------------------------------------
 const AdminAuth = ({ children }) => {
   const [email, setEmail] = useState("");
@@ -60,6 +179,7 @@ const AdminAuth = ({ children }) => {
   const [error, setError] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [checkingAuth, setCheckingAuth] = useState(true);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
 
   // Immediately clear any existing Firebase session on mount:
   useEffect(() => {
@@ -163,11 +283,18 @@ const AdminAuth = ({ children }) => {
     return <>{children}</>;
   }
 
+  // Show forgot password form
+  if (showForgotPassword) {
+    return (
+      <ForgotPassword onBack={() => setShowForgotPassword(false)} />
+    );
+  }
+
   // Otherwise, show the sign-in form
   return (
     <div className="mt-20 bg-white flex items-center justify-center">
       <div className="border border-gray-300 p-6 w-full max-w-sm">
-        <h2 className="text-xl font-medium text-gray-900 mb-4">Admin Sign In</h2>
+        <h2 className="text-xl font-medium text-gray-900 mb-12">Admin Sign In</h2>
 
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
@@ -194,7 +321,7 @@ const AdminAuth = ({ children }) => {
               value={passwordInput}
               onChange={(e) => setPasswordInput(e.target.value)}
               placeholder="••••••••"
-              className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:border-gray-500"
+              className="mb-5 w-full px-3 py-2 border border-gray-300 focus:outline-none focus:border-gray-500"
               required
               autoComplete="current-password"
             />
@@ -210,16 +337,25 @@ const AdminAuth = ({ children }) => {
             type="submit"
             className="w-full bg-black text-white py-2 px-3 hover:bg-gray-800"
           >
-            Sign In
+            SIGN IN
           </button>
         </form>
+
+        <div className="mt-4 pt-4 border-t border-gray-200">
+          <button
+            onClick={() => setShowForgotPassword(true)}
+            className="text-md text-gray-600 hover:text-gray-800"
+          >
+            Forgot your password?
+          </button>
+        </div>
       </div>
     </div>
   );
 };
 
 // -------------------------------------------------------------------------------------
-// 3) UploadDesign component (unchanged, aside from imports)
+// 4) UploadDesign component (unchanged, aside from imports)
 // -------------------------------------------------------------------------------------
 const UploadDesign = ({ onUploadSuccess, showModal, setShowModal }) => {
   const [uploading, setUploading] = useState(false);
@@ -382,7 +518,7 @@ const UploadDesign = ({ onUploadSuccess, showModal, setShowModal }) => {
 };
 
 // -------------------------------------------------------------------------------------
-// 4) DesignItem component (unchanged)
+// 5) DesignItem component (unchanged)
 // -------------------------------------------------------------------------------------
 const DesignItem = ({ design, imageURL, likesCount, onDelete }) => {
   const [showPreview, setShowPreview] = useState(false);
@@ -514,7 +650,7 @@ const DesignItem = ({ design, imageURL, likesCount, onDelete }) => {
 };
 
 // -------------------------------------------------------------------------------------
-// 5) Main AdminPanel: fetches designs, displays grid, handles upload/delete
+// 6) Main AdminPanel: fetches designs, displays grid, handles upload/delete
 // -------------------------------------------------------------------------------------
 const AdminPanel = () => {
   const [designs, setDesigns] = useState([]);
@@ -526,7 +662,7 @@ const AdminPanel = () => {
 
   const [designsMetadata, setDesignsMetadata] = useState([]);
 
-  // Discover all images in “Designs/” folder
+  // Discover all images in "Designs/" folder
   const discoverDesigns = async () => {
     try {
       const designsRef = storageRef(storage, "Designs/");
@@ -709,7 +845,7 @@ const AdminPanel = () => {
 };
 
 // -------------------------------------------------------------------------------------
-// 6) Default export: wrap AdminPanel in AdminAuth
+// 7) Default export: wrap AdminPanel in AdminAuth
 // -------------------------------------------------------------------------------------
 export default function Admin() {
   return (

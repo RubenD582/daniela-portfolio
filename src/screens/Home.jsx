@@ -111,7 +111,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.3 }}
-            className="font-bodoni-moda text-6xl sm:text-6xl lg:text-8xl font-light text-gray-900 mb-8 tracking-tight leading-none"
+            className="font-bodoni-moda text-5xl sm:text-6xl lg:text-8xl font-light text-gray-900 mb-8 tracking-tight leading-none"
           >
             PRECISION
             <motion.span 
@@ -145,7 +145,7 @@ export default function Home() {
               whileTap={{ scale: 0.97 }}
               transition={{ type: "spring", stiffness: 400, damping: 17 }}
               onClick={() => scrollToElement('contact', 1500)}
-              className="bg-gray-900 text-white px-12 sm:px-14 py-4 text-sm font-medium uppercase tracking-wider hover:bg-gray-800 transition-colors duration-200 flex items-center justify-center w-full sm:w-auto"
+              className="bg-black text-white px-12 sm:px-14 py-4 text-sm font-medium uppercase tracking-wider hover:bg-gray-800 transition-colors duration-200 flex items-center justify-center w-full sm:w-auto"
             >
               <span className="relative z-10">Book Now</span>
               <ArrowRight className="ml-3 w-4 h-4" />
@@ -483,13 +483,13 @@ export default function Home() {
         whileInView="visible"
         viewport={{ once: true }}
         variants={fadeInUp}
-        className="py-12 bg-gray-900 text-gray-400 w-full"
+        className="py-12 bg-black text-gray-400 w-full"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <motion.div 
               transition={{ type: "spring", stiffness: 400, damping: 17 }}
-              className="text-xl sm:text-2xl text-white font-light cursor-pointer"
+              className="text-xl sm:text-2xl text-white font-light cursor-pointer font-dancing-script"
               onClick={() => scrollToElement('hero', 1500)}
             >
               Daniela Alves
