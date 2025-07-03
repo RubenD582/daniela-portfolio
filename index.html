@@ -1,23 +1,213 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/logo.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <style>
-        html, body, #root {
-          background-color: white !important;
-          margin: 0 !important;
-          padding: 0 !important;
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/png" href="/logo.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <!-- SEO Meta Tags -->
+  <title>Professional Nail Services | Nails by Dani - Emfuleni Golf Estate, Gauteng</title>
+  <meta name="description" content="Expert gel overlays, acrylic extensions, nail art, and maintenance services in Emfuleni Golf Estate, Gauteng. Professional nail care with premium products. Follow @nails_by_danielaalves for latest designs!" />
+  <meta name="keywords" content="gel overlay, acrylic extensions, nail art, nail sculptures, gel extensions, Emfuleni Golf Estate, Gauteng, professional nail services, nails by daniela alves" />
+  <meta name="author" content="Nails by Dani" />
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Professional Nail Services | Nails by Dani" />
+  <meta property="og:description" content="Expert gel overlays, acrylic extensions, nail art, and maintenance services in Emfuleni Golf Estate, Gauteng. Follow @nails_by_danielaalves for inspiration!" />
+  <meta property="og:url" content="https://nailsbydani.co.za" />
+  <meta property="og:image" content="https://nailsbydani.co.za/og-image.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  
+  <!-- Instagram Integration -->
+  <meta name="instagram:site" content="@nails_by_danielaalves" />
+  <meta name="instagram:creator" content="@nails_by_danielaalves" />
+  
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://nailsbydani.co.za" />
+  
+  <!-- Enhanced Local Business Schema with Social Media -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BeautySalon",
+    "name": "Nails by Dani",
+    "alternateName": "Nails by Daniela Alves",
+    "description": "Professional nail services specializing in gel overlays, acrylic extensions, nail art, and maintenance services. Follow @nails_by_danielaalves for latest nail art inspiration and designs.",
+    "url": "https://nailsbydani.co.za",
+    "telephone": "+27661043677",
+    "sameAs": [
+      "https://www.instagram.com/nails_by_danielaalves/"
+    ],
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "SE3",
+      "addressLocality": "Emfuleni Golf Estate",
+      "addressRegion": "Gauteng",
+      "addressCountry": "ZA"
+    },
+    "areaServed": {
+      "@type": "City",
+      "name": "Emfuleni Golf Estate"
+    },
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": "Nail Services",
+      "itemListElement": [
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Gel Overlay",
+            "description": "Professional gel overlay on natural nails for strength and durability"
+          },
+          "price": "160",
+          "priceCurrency": "ZAR"
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Acrylic Overlay",
+            "description": "Strong acrylic overlay system providing excellent durability"
+          },
+          "price": "180",
+          "priceCurrency": "ZAR"
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Gel Extensions",
+            "description": "Professional gel extensions in short, medium, and long lengths"
+          },
+          "price": "210",
+          "priceCurrency": "ZAR"
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Acrylic Sculptures",
+            "description": "Hand-sculpted acrylic nails with superior strength and durability"
+          },
+          "price": "230",
+          "priceCurrency": "ZAR"
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Nail Art",
+            "description": "Custom nail art designs to express your personal style"
+          },
+          "price": "5",
+          "priceCurrency": "ZAR"
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Gel Fill",
+            "description": "Professional gel fill service to maintain your nails"
+          },
+          "price": "120",
+          "priceCurrency": "ZAR"
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Acrylic Fill",
+            "description": "Professional acrylic fill service for maintenance"
+          },
+          "price": "120",
+          "priceCurrency": "ZAR"
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Broken Nail Repair",
+            "description": "Quick and effective repair for broken or damaged nails"
+          },
+          "price": "20",
+          "priceCurrency": "ZAR"
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Soak Off Service",
+            "description": "Safe removal of gel or acrylic nails without damage"
+          },
+          "price": "50",
+          "priceCurrency": "ZAR"
         }
-      </style>
-
-    <!-- Single comprehensive Google Fonts link -->
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Lora:wght@300;400;700&family=Dancing+Script:wght@400;700&family=Montserrat:wght@300;400;500;600&family=Bodoni+Moda:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <title>Nails by Dani</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+      ]
+    },
+    "priceRange": "R20-R270",
+    "openingHoursSpecification": {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": [
+        "Monday",
+        "Tuesday", 
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday"
+      ],
+      "opens": "09:00",
+      "closes": "17:00"
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "5.0",
+      "reviewCount": "1",
+      "bestRating": "5",
+      "worstRating": "1"
+    }
+  }
+  </script>
+  
+  <!-- Additional Social Media Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Daniela Alves",
+    "jobTitle": "Professional Nail Artist",
+    "worksFor": {
+      "@type": "BeautySalon",
+      "name": "Nails by Dani"
+    },
+    "sameAs": [
+      "https://www.instagram.com/nails_by_danielaalves/"
+    ],
+    "knowsAbout": [
+      "Nail Art",
+      "Gel Extensions",
+      "Acrylic Nails",
+      "Nail Design",
+      "Nail Care"
+    ]
+  }
+  </script>
+  
+  <style>
+    html, body, #root {
+      background-color: white !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+  </style>
+  
+  <!-- Optimized Google Fonts with font-display for performance -->
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Lora:wght@300;400;700&family=Dancing+Script:wght@400;700&family=Montserrat:wght@300;400;500;600&family=Bodoni+Moda:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
+</body>
 </html>
