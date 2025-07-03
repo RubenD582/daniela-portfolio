@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ArrowRight, Star } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-const faqs = [
+export const faqs = [
   {
     question: 'How long do gel nails last?',
     answer: 'Gel nails typically last 2-4 weeks with proper care. The longevity depends on your lifestyle, nail growth rate, and aftercare routine. Most clients book touch-ups every 3 weeks to maintain that fresh, salon-perfect look.',
