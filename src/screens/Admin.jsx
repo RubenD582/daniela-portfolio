@@ -785,21 +785,21 @@ const AdminPanel = () => {
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
-      <div className="border-b border-gray-200">
+      <div className="border-b border-gray-200 mt-[73px]">
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
           <div>
-            <h1 className="text-xl font-medium text-gray-900">Admin Panel</h1>
+            {/* <h1 className="text-xl font-medium text-gray-900">Admin Panel</h1> */}
             <p className="text-gray-500 text-sm mt-1">
-              {Object.keys(imageURLs).length} images,{" "}
+              {Object.keys(imageURLs).length} IMAGES,{<br/>}
               {Object.values(likesMap).reduce((sum, likes) => sum + likes, 0).toLocaleString()}{" "}
-              total likes
+              LIKES
             </p>
           </div>
           <button
             onClick={() => setShowUploadModal(true)}
             className="bg-black text-white px-4 py-2 hover:bg-gray-800 transition-colors duration-200 flex items-center space-x-2 text-xs"
           >
-            <span>Upload Design</span>
+            <span>UPLOAD IMAGE</span>
           </button>
         </div>
       </div>
