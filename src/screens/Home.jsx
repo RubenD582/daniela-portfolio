@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { scrollToElement } from '../components/scrollUtils';
 import ContactSection from './Contact';
 
-export const faqs = [
+const faqs = [
   {
     question: 'How long do gel nails last?',
     answer: 'Gel nails typically last 2-4 weeks with proper care. The longevity depends on your lifestyle, nail growth rate, and aftercare routine. Most clients book touch-ups every 3 weeks to maintain that fresh, salon-perfect look.',
@@ -71,7 +71,7 @@ export default function Home() {
           }}>
             PRECISION
             <br />
-            & <span style={{ color: '#d97706' }}>ELEGANCE</span>
+            & <span style={{ color: '#CFB53B' }}>ELEGANCE</span>
           </h1>
 
           <p style={{ 
@@ -86,7 +86,9 @@ export default function Home() {
           </p>
 
           <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <button style={{
+            <button 
+              onClick={() => scrollToElement('contact', 1500)}
+              style={{
               backgroundColor: '#111',
               color: 'white',
               padding: '16px 32px',
@@ -413,7 +415,9 @@ export default function Home() {
         </div>
       </section>
 
-      <ContactSection />
+      <div id="contact">
+        <ContactSection />
+      </div>
 
       {/* Footer */}
       <footer style={{ 
