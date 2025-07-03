@@ -92,14 +92,14 @@ export default function Home() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          className="relative z-10 text-center px-4 sm:px-6 max-w-5xl w-full"
+          className="relative z-10 text-center px-6 sm:px-6 max-w-5xl w-full md:mt-0"
         >
           {/* Professional Badge */}
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="inline-flex items-center mb-6 px-4 py-2 bg-white bg-opacity-80"
+            className="inline-flex items-center mb-4 md:mb-6 px-3 py-1.5 md:px-4 md:py-2 bg-white bg-opacity-80 rounded-full md:rounded-none"
           >
             <p className="text-xs text-gray-600 font-medium uppercase tracking-widest">
               Certified Nail Technician
@@ -111,14 +111,14 @@ export default function Home() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.3 }}
-            className="font-bodoni-moda text-5xl sm:text-6xl lg:text-8xl font-light text-gray-900 mb-8 tracking-tight leading-none"
+            className="font-bodoni-moda text-5xl md:text-6xl lg:text-8xl font-light text-gray-900 mb-4 md:mb-8 tracking-tight leading-tight md:leading-none"
           >
-            PRECISION
+            <span className="block">PRECISION</span>
             <motion.span 
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, delay: 0.5 }}
-              className="block mt-2 sm:mt-3"
+              className="block mt-1 md:mt-3"
             >
               & <span style={{ color: '#CFB53B' }}>ELEGANCE</span>
             </motion.span>
@@ -129,9 +129,9 @@ export default function Home() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.6 }}
-            className="font-sans text-md sm:text-lg text-gray-600 mb-12 max-w-2xl mx-auto leading-relaxed font-light"
+            className="font-sans text-base md:text-lg text-gray-600 mb-8 md:mb-12 max-w-lg md:max-w-2xl mx-auto leading-relaxed font-light px-2 md:px-0"
           >
-            Transforming your nails into works of art with meticulous attention to detail and contemporary elegance.
+            Transforming your nails into works of art with meticulous attention to detail.
           </motion.p>
 
           {/* Call-to-Action Buttons */}
@@ -139,13 +139,13 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.7 }}
-            className="flex flex-col sm:flex-row gap-4 sm:gap-6 mt-14 justify-center items-center"
+            className="flex flex-col md:flex-row gap-3 md:gap-6 mt-6 md:mt-14 justify-center items-center px-4 md:px-0"
           >
             <motion.button
               whileTap={{ scale: 0.97 }}
               transition={{ type: "spring", stiffness: 400, damping: 17 }}
               onClick={() => scrollToElement('contact', 1500)}
-              className="bg-black text-white px-12 sm:px-14 py-4 text-sm font-medium uppercase tracking-wider hover:bg-gray-800 transition-colors duration-200 flex items-center justify-center w-full sm:w-auto"
+              className="bg-black text-white px-10 md:px-14 py-3.5 md:py-4 text-sm font-medium uppercase tracking-wider hover:bg-gray-800 transition-colors duration-200 flex items-center justify-center w-full md:w-auto rounded-sm md:rounded-none"
             >
               <span className="relative z-10">Book Now</span>
               <ArrowRight className="ml-3 w-4 h-4" />
@@ -155,11 +155,19 @@ export default function Home() {
               whileTap={{ scale: 0.97 }}
               transition={{ type: "spring", stiffness: 400, damping: 17 }}
               onClick={() => navigate('/designs')}
-              className="text-gray-700 hover:text-gray-900 transition-colors duration-200 text-sm font-medium uppercase tracking-wider px-12 sm:px-14 py-4 border border-gray-200 hover:border-gray-400 flex items-center justify-center bg-white w-full sm:w-auto"
+              className="text-gray-700 hover:text-gray-900 transition-colors duration-200 text-sm font-medium uppercase tracking-wider px-10 md:px-14 py-3.5 md:py-4 border border-gray-200 hover:border-gray-400 flex items-center justify-center bg-white w-full md:w-auto rounded-sm md:rounded-none"
             >
               <span className="relative z-10">View Gallery</span>
             </motion.button>
           </motion.div>
+
+          {/* Mobile-only decorative element */}
+          <motion.div 
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, delay: 0.9 }}
+            className="block md:hidden mt-8 w-12 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent mx-auto"
+          ></motion.div>
         </motion.div>
 
         {/* Scroll Indicator */}
@@ -181,7 +189,7 @@ export default function Home() {
           </div>
         </motion.div>
 
-        {/* Corner Decorative Elements */}
+        {/* Corner Decorative Elements - Desktop Only */}
         <motion.div 
           initial={{ opacity: 0, scale: 0 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -266,23 +274,20 @@ export default function Home() {
                 <motion.div
                   key={idx}
                   variants={scaleUp}
-                  whileHover={{ y: -6 }}
+                  // whileHover={{ y: -6 }}
                   transition={{ duration: 0.2, ease: "easeOut" }}
                   onClick={handleServiceClick}
-                  className="group bg-white p-8 sm:p-12 cursor-pointer transition-all duration-300 relative border border-gray-100 hover:border-gray-200"
+                  className="group bg-white p-8 sm:p-12 cursor-pointer transition-all duration-300 relative border border-gray-100 hover:border-gray-50000"
                 >
                   {service.popular && (
-                    <motion.div 
-                      initial={{ opacity: 0, y: -10 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.5 }}
+                    <div
                       className="absolute -top-4 left-0 right-0 z-10 flex justify-center"
                     >
                       <div className="bg-black text-white px-4 sm:px-6 py-2 text-xs uppercase tracking-widest font-medium whitespace-nowrap">
                         Most Popular
                       </div>
                       <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 sm:border-l-6 sm:border-r-6 sm:border-t-6 border-l-transparent border-r-transparent border-t-black"></div>
-                    </motion.div>
+                    </div>
                   )}
 
                   <div className="h-full flex flex-col">
@@ -296,13 +301,13 @@ export default function Home() {
                       {service.title}
                     </h3>
 
-                    <p className="text-gray-500 leading-relaxed mb-auto text-sm sm:text-base font-sans">
+                    <p className="text-gray-500 leading-relaxed mb-auto text-sm sm:text-base">
                       {service.description}
                     </p>
 
                     <div className="mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-gray-100">
                       <div className="flex items-end justify-between">
-                        <div className="text-xl sm:text-2xl font-light text-black">
+                        <div className="text-lg sm:text-xl font-light text-black">
                           {service.price}
                         </div>
                         <div className="text-xs sm:text-sm font-medium text-black">
@@ -373,8 +378,7 @@ export default function Home() {
             ].map((testimonial, idx) => (
               <motion.div
                 key={idx}
-                variants={idx % 2 === 0 ? slideInLeft : slideInRight}
-                whileHover={{ y: -3 }}
+                variants={staggerContainer}
                 transition={{ duration: 0.2, ease: "easeOut" }}
                 className="bg-white p-6 sm:p-8 border border-gray-100"
               >
