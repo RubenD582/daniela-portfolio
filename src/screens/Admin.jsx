@@ -617,148 +617,149 @@ const DesignItem = ({ design, imageURL, likesCount, onDelete, onArchive }) => {
       </div>
 
       {showDetails && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 md:p-6">
-          <div className="bg-white w-full max-w-4xl max-h-[95vh] md:max-h-[90vh] overflow-hidden rounded-lg shadow-2xl flex flex-col md:flex-row">
-            <div className="flex-1 bg-white relative min-h-[40vh] md:min-h-0">
-              <button
-                onClick={() => setShowDetails(false)}
-                className="absolute top-4 right-4 z-10 p-2 bg-white bg-opacity-90 hover:bg-opacity-100 rounded-full transition-all duration-150 shadow-sm"
-              >
-                <X size={16} className="text-gray-600" />
-              </button>
-              
-              {imageURL ? (
-                <img
-                  src={imageURL}
-                  alt={design.name || `Design ${design.id}`}
-                  className="w-full h-full object-contain"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center">
-                  <ImageIcon className="h-16 w-16 text-gray-300" />
-                </div>
-              )}
+  <div
+    className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 md:p-6"
+    // enable touch scrolling on iOS
+    style={{ WebkitOverflowScrolling: 'touch' }}
+  >
+    <div className="bg-white w-full max-w-4xl max-h-[95vh] md:max-h-[90vh] overflow-hidden rounded-lg shadow-2xl flex flex-col md:flex-row">
+      <div className="flex-1 bg-white relative min-h-[40vh] md:min-h-0 flex items-center justify-center p-4 md:p-6">
+        <button
+          onClick={() => setShowDetails(false)}
+          className="absolute top-4 right-4 z-10 p-2 bg-white bg-opacity-90 hover:bg-opacity-100 rounded-full transition-all duration-150 shadow-sm"
+        >
+          <X size={16} className="text-gray-600" />
+        </button>
+
+        {imageURL ? (
+          <img
+            src={imageURL}
+            alt={design.name || `Design ${design.id}`}
+            className="w-40 mx-auto sm:w-1/5 object-contain"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">
+            <ImageIcon className="h-16 w-16 text-gray-300" />
+          </div>
+        )}
+      </div>
+
+      <div className="w-full md:w-80 bg-white flex flex-col max-h-[55vh] md:max-h-full">
+        {/* Important: add flex and overflow-auto here for scrolling */}
+        <div className="flex-1 overflow-y-auto p-6 md:p-8 touch-auto" style={{ WebkitOverflowScrolling: 'touch' }}>
+          <div className="mb-6 md:mb-8">
+            <h2 className="text-xl md:text-2xl font-light text-gray-900 mb-2">
+              {design.name || `Design ${design.id}`}
+            </h2>
+            <div className="flex items-center text-gray-500">
+              <Heart className="h-4 w-4 mr-2" />
+              <span className="text-base md:text-lg font-light">
+                {(likesCount || 0).toLocaleString()} likes
+              </span>
+            </div>
+          </div>
+
+          <div className="space-y-4 md:space-y-6">
+            <div>
+              <h3 className="text-sm font-medium text-gray-900 mb-2">Design Name</h3>
+              <p className="text-gray-600">{design.name || 'Untitled'}</p>
             </div>
 
-            <div className="w-full md:w-80 bg-white flex flex-col max-h-[55vh] md:max-h-full">
-              <div className="flex-1 overflow-y-auto p-6 md:p-8">
-                <div className="mb-6 md:mb-8">
-                  <h2 className="text-xl md:text-2xl font-light text-gray-900 mb-2">
-                    {design.name || `Design ${design.id}`}
-                  </h2>
-                  <div className="flex items-center text-gray-500">
-                    <Heart className="h-4 w-4 mr-2" />
-                    <span className="text-base md:text-lg font-light">
-                      {(likesCount || 0).toLocaleString()} likes
-                    </span>
-                  </div>
-                </div>
+            <div>
+              <h3 className="text-sm font-medium text-gray-900 mb-2">Design ID</h3>
+              <p className="text-gray-600 font-mono text-sm">{design.id}</p>
+            </div>
 
-                <div className="space-y-4 md:space-y-6">
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-900 mb-2">Design Name</h3>
-                    <p className="text-gray-600">{design.name || 'Untitled'}</p>
-                  </div>
+            <div>
+              <h3 className="text-sm font-medium text-gray-900 mb-2">Created</h3>
+              <p className="text-gray-600">
+                {design.createdAt ? new Date(design.createdAt).toLocaleDateString() : 'Unknown'}
+              </p>
+            </div>
 
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-900 mb-2">Design ID</h3>
-                    <p className="text-gray-600 font-mono text-sm">{design.id}</p>
-                  </div>
-
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-900 mb-2">Created</h3>
-                    <p className="text-gray-600">
-                      {design.createdAt ? new Date(design.createdAt).toLocaleDateString() : 'Unknown'}
-                    </p>
-                  </div>
-
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-900 mb-2">Engagement</h3>
-                    <div className="bg-gray-50 p-4 rounded-lg">
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-gray-600">Total Likes</span>
-                        <span className="font-medium text-gray-900">
-                          {(likesCount || 0).toLocaleString()}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-900 mb-2">Status</h3>
-                    <div className="flex items-center">
-                      <div className={`w-2 h-2 rounded-full mr-2 ${
-                        design.archived ? 'bg-gray-400' : 'bg-green-400'
-                      }`}></div>
-                      <span className="text-sm text-gray-600">
-                        {design.archived ? 'Archived' : 'Published'}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="border-t border-gray-100 p-6 md:p-8 bg-white space-y-3">
-                    <button
-                      onClick={handleArchive}
-                      disabled={isArchiving}
-                      className={`w-full py-3 px-4 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 text-sm font-medium rounded-lg ${
-                        design.archived 
-                          ? 'bg-blue-600 text-white hover:bg-blue-700' 
-                          : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                      }`}
-                    >
-                      {isArchiving ? (
-                        <span className="flex items-center justify-center">
-                          <Loader size={16} className="animate-spin mr-2" />
-                          {design.archived ? 'Unarchiving...' : 'Archiving...'}
-                        </span>
-                      ) : (
-                        <span className="flex items-center justify-center">
-                          {design.archived ? (
-                            <>
-                              <ArchiveRestore size={16} className="mr-2" />
-                              Unarchive
-                            </>
-                          ) : (
-                            <>
-                              <Archive size={16} className="mr-2" />
-                              Archive
-                            </>
-                          )}
-                        </span>
-                      )}
-                    </button>
-
-                    <button
-                      onClick={handleDelete}
-                      disabled={isDeleting}
-                      className="w-full bg-gray-900 text-white py-3 px-4 hover:bg-black disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 text-sm font-medium rounded-lg"
-                    >
-                      {isDeleting ? (
-                        <span className="flex items-center justify-center">
-                          <Loader size={16} className="animate-spin mr-2" />
-                          Deleting...
-                        </span>
-                      ) : (
-                        <span className="flex items-center justify-center">
-                          <Trash2 size={16} className="mr-2" />
-                          Delete
-                        </span>
-                      )}
-                    </button>
-                    
-                    {/* <button
-                      onClick={() => setShowDetails(false)}
-                      className="w-full mt-3 text-gray-600 hover:text-gray-900 transition-colors text-sm"
-                    >
-                      Close
-                    </button> */}
-                  </div>
+            <div>
+              <h3 className="text-sm font-medium text-gray-900 mb-2">Engagement</h3>
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Total Likes</span>
+                  <span className="font-medium text-gray-900">
+                    {(likesCount || 0).toLocaleString()}
+                  </span>
                 </div>
               </div>
             </div>
+
+            <div>
+              <h3 className="text-sm font-medium text-gray-900 mb-2">Status</h3>
+              <div className="flex items-center">
+                <div
+                  className={`w-2 h-2 rounded-full mr-2 ${
+                    design.archived ? 'bg-gray-400' : 'bg-green-400'
+                  }`}
+                ></div>
+                <span className="text-sm text-gray-600">
+                  {design.archived ? 'Archived' : 'Published'}
+                </span>
+              </div>
+            </div>
+
+            <div className="border-t border-gray-100 p-6 md:p-8 bg-white space-y-3">
+              <button
+                onClick={handleArchive}
+                disabled={isArchiving}
+                className={`w-full py-3 px-4 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 text-sm font-medium rounded-lg ${
+                  design.archived
+                    ? 'bg-blue-600 text-white hover:bg-blue-700'
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                }`}
+              >
+                {isArchiving ? (
+                  <span className="flex items-center justify-center">
+                    <Loader size={16} className="animate-spin mr-2" />
+                    {design.archived ? 'Unarchiving...' : 'Archiving...'}
+                  </span>
+                ) : (
+                  <span className="flex items-center justify-center">
+                    {design.archived ? (
+                      <>
+                        <ArchiveRestore size={16} className="mr-2" />
+                        Unarchive
+                      </>
+                    ) : (
+                      <>
+                        <Archive size={16} className="mr-2" />
+                        Archive
+                      </>
+                    )}
+                  </span>
+                )}
+              </button>
+
+              <button
+                onClick={handleDelete}
+                disabled={isDeleting}
+                className="w-full bg-gray-900 text-white py-3 px-4 hover:bg-black disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 text-sm font-medium rounded-lg"
+              >
+                {isDeleting ? (
+                  <span className="flex items-center justify-center">
+                    <Loader size={16} className="animate-spin mr-2" />
+                    Deleting...
+                  </span>
+                ) : (
+                  <span className="flex items-center justify-center">
+                    <Trash2 size={16} className="mr-2" />
+                    Delete
+                  </span>
+                )}
+              </button>
+            </div>
           </div>
         </div>
-      )}
+      </div>
+    </div>
+  </div>
+)}
+
     </>
   );
 };
@@ -880,22 +881,9 @@ const AdminPanel = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 mt-[73px]">
-      <div className="border-b border-gray-100 sticky top-0 z-10">
+      {/* <div className="border-b border-gray-100 sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-6 py-6">
           <div className="flex justify-between items-center">
-            {/* <div>
-              <h1 className="text-2xl font-light text-gray-900 mb-2">Design Management</h1>
-              <div className="flex items-center space-x-6 text-sm text-gray-500">
-                <span className="flex items-center">
-                  <ImageIcon className="h-4 w-4 mr-1" />
-                  {totalDesigns} designs
-                </span>
-                <span className="flex items-center">
-                  <Heart className="h-4 w-4 mr-1" />
-                  {totalLikes.toLocaleString()} total likes
-                </span>
-              </div>
-            </div> */}
             <div></div>
             <button
               onClick={() => setShowUploadModal(true)}
@@ -906,7 +894,7 @@ const AdminPanel = () => {
             </button>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {notification && (
         <div className="fixed top-6 right-6 z-50">
@@ -928,12 +916,7 @@ const AdminPanel = () => {
             <ImageIcon className="h-12 w-12 text-gray-300 mx-auto mb-4" />
             <h2 className="text-xl font-medium text-gray-900 mb-2">NO DESIGNS YET</h2>
             <p className="text-gray-500 text-sm mb-6">Get started by uploading your first design</p>
-            {/* <button
-              onClick={() => setShowUploadModal(true)}
-              className="bg-gray-900 text-white px-6 py-3 hover:bg-black transition-colors duration-200 text-sm font-medium"
-            >
-              UPLOAD
-            </button> */}
+            {/* Your upload button here if needed */}
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-6">
@@ -946,6 +929,15 @@ const AdminPanel = () => {
                 onDelete={handleDeleteDesign}
               />
             ))}
+
+            {/* Append this div as a grid item */}
+            <div 
+              onClick={() => setShowUploadModal(true)}
+              className="flex items-center justify-center border-2 border-dashed border-gray-300 rounded-md cursor-pointer hover:border-gray-600"
+            >
+              <Plus size={16} className="mr-2"/>
+              Upload Design
+            </div>
           </div>
         )}
       </div>
