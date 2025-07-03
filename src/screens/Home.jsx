@@ -77,14 +77,10 @@ export default function Home() {
   const [isLoaded, setIsLoaded] = useState(false);
   const navigate = useNavigate();
   
-  // Add loading state to prevent FOUC
+  // Simplified loading state - remove the artificial delay
   useEffect(() => {
-    // Ensure component is fully mounted and styles loaded
-    const timer = setTimeout(() => {
-      setIsLoaded(true);
-    }, 100);
-    
-    return () => clearTimeout(timer);
+    // Set loaded immediately to prevent flash
+    setIsLoaded(true);
   }, []);
 
   // Simple scroll-based animation
@@ -96,7 +92,6 @@ export default function Home() {
         const element = document.getElementById(sectionId);
         if (element && !animatedSections.has(sectionId)) {
           const rect = element.getBoundingClientRect();
-          // Changed from 0.8 to 0.6 so animations trigger when 60% of viewport shows the section
           const isVisible = rect.top < window.innerHeight * 0.6;
           
           if (isVisible) {
@@ -106,14 +101,12 @@ export default function Home() {
       });
     };
 
-    // Only start scroll handling after component is loaded
-    if (isLoaded) {
-      handleScroll();
-      window.addEventListener('scroll', handleScroll, { passive: true });
-      
-      return () => window.removeEventListener('scroll', handleScroll);
-    }
-  }, [animatedSections, isLoaded]);
+    // Start scroll handling immediately
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [animatedSections]);
 
   const toggleFAQ = (index) => {
     setOpenIndex(prev => (prev === index ? null : index));
@@ -125,41 +118,23 @@ export default function Home() {
 
   const isVisible = (sectionId) => animatedSections.has(sectionId);
 
-  // Create visibility object for components that expect the old format
   const visibilityObject = {
     services: isVisible('services'),
     testimonials: isVisible('testimonials'),
     faq: isVisible('faq'),
-    gallery: isVisible('services'), // Assuming gallery should show when services is visible
-    about: isVisible('services') // If there's an about section
+    gallery: isVisible('services'),
+    about: isVisible('services')
   };
-
-  // Show loading state or skeleton
-  if (!isLoaded) {
-    return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-pulse">
-            <div className="text-2xl font-light text-gray-400 uppercase font-bodoni-moda">Loading...</div>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Hero Section - Always visible, but with proper initial state */}
+      {/* Hero Section - Remove conditional rendering and loading states */}
       <section
         id="hero"
         className="relative h-screen flex items-center justify-center overflow-hidden bg-white"
-        style={{
-          // Add a fallback background to prevent gray flash
-          backgroundColor: '#ffffff'
-        }}
       >
         <div className="relative z-10 text-center px-6 max-w-5xl w-full">
-          <div className={`transition-all duration-700 ease-out ${isLoaded ? 'animate-fade-in-up' : 'opacity-0 translate-y-8'}`}>
+          <div className="animate-fade-in-up">
             {/* Professional Badge */}
             <div className="inline-flex items-center mb-6 px-4 py-2 bg-white/80 backdrop-blur-sm">
               <p className="text-xs text-gray-600 font-medium uppercase tracking-widest">
@@ -167,9 +142,9 @@ export default function Home() {
               </p>
             </div>
 
-            <h1 className={`text-5xl md:text-8xl font-light font-bodoni-moda text-neutral-900 mb-8 tracking-tight leading-[0.85] transition-all duration-1000 ease-out ${isLoaded ? 'animate-fade-in-up-delay-1' : 'opacity-0 translate-y-8'}`}>
+            <h1 className="text-5xl md:text-8xl font-light font-bodoni-moda text-neutral-900 mb-8 tracking-tight leading-[0.85] animate-fade-in-up-delay-1">
               PRECISION
-              <span className={`block mt-3 transition-all duration-1200 ease-out ${isLoaded ? 'animate-fade-in-up-delay-2' : 'opacity-0 translate-y-8'}`}>
+              <span className="block mt-3 animate-fade-in-up-delay-2">
                 & <span className="text-[#CFB53B] relative">
                   ELEGANCE
                 </span>
@@ -177,12 +152,12 @@ export default function Home() {
             </h1>
 
             {/* Elegant Tagline */}
-            <p className={`text-sm md:text-lg font-sans text-neutral-600 mb-12 max-w-2xl mx-auto leading-relaxed font-light transition-all duration-1000 ease-out ${isLoaded ? 'animate-fade-in-up-delay-3' : 'opacity-0 translate-y-8'}`}>
+            <p className="text-sm md:text-lg font-sans text-neutral-600 mb-12 max-w-2xl mx-auto leading-relaxed font-light animate-fade-in-up-delay-3">
               Transforming your nails into works of art with meticulous attention to detail and contemporary elegance.
             </p>
 
             {/* Call-to-Action Buttons */}
-            <div className={`flex flex-col sm:flex-row gap-3 sm:gap-6 mt-14 justify-center items-center transition-all duration-1000 ease-out ${isLoaded ? 'animate-fade-in-up-delay-4' : 'opacity-0 translate-y-8'}`}>
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-6 mt-14 justify-center items-center animate-fade-in-up-delay-4">
               <button
                 onClick={() => scrollToElement('contact', 1500)}
                 className="group relative bg-neutral-900 text-white px-14 py-4 text-sm font-medium uppercase tracking-wider hover:bg-neutral-800 transition-all duration-[400ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] flex items-center justify-center hover:shadow-xl transform hover:-translate-y-1 overflow-hidden"
@@ -204,7 +179,7 @@ export default function Home() {
         </div>
 
         {/* Enhanced Scroll Indicator */}
-        <div className={`hidden md:block absolute bottom-8 left-1/2 transform -translate-x-1/2 transition-all duration-1000 ease-out ${isLoaded ? 'animate-fade-in-delay-5' : 'opacity-0'}`}>
+        <div className="hidden md:block absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-fade-in-delay-5">
           <div className="flex flex-col items-center group">
             <span className="text-xs text-neutral-500 mb-3 uppercase tracking-widest group-hover:text-neutral-700 transition-colors duration-300">
               Scroll Down
@@ -485,6 +460,11 @@ export default function Home() {
 
         .animate-fade-in-delay-5 {
           animation: fadeIn 0.8s ease-out 0.6s both;
+        }
+
+        /* Ensure consistent white background */
+        body {
+          background-color: #ffffff;
         }
       `}</style>
     </div>
