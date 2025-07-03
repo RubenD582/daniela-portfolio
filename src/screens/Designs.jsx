@@ -204,8 +204,9 @@ export default function Designs() {
             {loading ? (
               // Skeleton loading for title and subtitle
               <>
-                {/* <div className="h-10 w-64 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 rounded-lg mb-4 animate-pulse bg-[length:200%_100%] animate-shimmer mx-auto"></div> */}
-                {/* <div className="h-6 w-80 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 rounded-lg max-w-md mx-auto animate-pulse bg-[length:200%_100%] animate-shimmer"></div> */}
+                <h2 className="text-4xl md:text-5xl font-extralight text-stone-900 mb-3">
+                  Portfolio Designs
+                </h2>
               </>
             ) : (
               // Actual content
