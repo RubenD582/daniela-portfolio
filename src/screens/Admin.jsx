@@ -919,7 +919,14 @@ const AdminPanel = () => {
             <ImageIcon className="h-12 w-12 text-gray-300 mx-auto mb-4" />
             <h2 className="text-xl font-medium text-gray-900 mb-2">NO DESIGNS YET</h2>
             <p className="text-gray-500 text-sm mb-6">Get started by uploading your first design</p>
-            {/* Your upload button here if needed */}
+            
+            <div 
+              onClick={() => setShowUploadModal(true)}
+              className="mt-12 aspect-square flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-md cursor-pointer hover:border-gray-600 text-sm text-gray-600"
+            >
+              <Plus size={20} className="mb-1" />
+              Upload Design
+            </div>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-6">
