@@ -100,18 +100,13 @@ const GalleryPreview = ({ isVisible = {} }) => {
   };
   
   // Function to generate random gallery items from available images
-  const generateRandomItems = (availableImageNumbers, itemsToShow = 8) => {
-    if (availableImageNumbers.length === 0) return [];
-    
-    const shuffled = [...availableImageNumbers];
-    
-    // Shuffle array
+  const generateRandomItems = (ids, itemsToShow = 8) => {
+    const shuffled = [...ids];
     for (let i = shuffled.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
     }
-    
-    return shuffled.slice(0, Math.min(itemsToShow, shuffled.length));
+    return shuffled.slice(0, itemsToShow);
   };
 
   const handleImageLoad = (itemId) => {
@@ -155,126 +150,94 @@ const GalleryPreview = ({ isVisible = {} }) => {
 
   // Fetch available images from Firebase Storage
   useEffect(() => {
-    const fetchAvailableImages = async () => {
+    const fetchAvailableDesigns = async () => {
       setIsLoadingImageList(true);
-      
-      // Try to get cached image list first
-      let cachedImageList = [];
+  
       try {
-        if (isCacheValid()) {
-          const cachedListString = localStorage.getItem(CACHE_KEYS.imageList);
-          if (cachedListString) {
-            cachedImageList = JSON.parse(cachedListString);
-            setAvailableImages(cachedImageList);
-            setGalleryItems(generateRandomItems(cachedImageList));
-            setIsLoadingImageList(false);
-            return; // Use cached data and skip Firebase call
-          }
-        }
-      } catch (error) {
-        console.error('Error reading cached image list:', error);
-      }
-      
-      // Fetch from Firebase Storage
-      try {
-        const designsRef = storageRef(storage, 'Designs/');
-        const listResult = await listAll(designsRef);
-        
-        // Extract image numbers from filenames and filter valid ones
-        const imageNumbers = listResult.items
-          .map(item => extractImageNumber(item.name))
-          .filter(num => num !== null)
-          .sort((a, b) => a - b); // Sort numerically
-        
-        console.log(`Found ${imageNumbers.length} images:`, imageNumbers);
-        
-        setAvailableImages(imageNumbers);
-        setGalleryItems(generateRandomItems(imageNumbers));
-        
-        // Cache the image list
-        try {
-          localStorage.setItem(CACHE_KEYS.imageList, JSON.stringify(imageNumbers));
+        const db = getDatabase(firebaseApp);
+        const snapshot = await get(child(ref(db), 'designs'));
+  
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+  
+          // Convert to array and filter out archived
+          const designs = Object.values(data)
+            .filter(d => d && d.archived === false)
+            .map(d => ({
+              id: d.id,
+              fileName: d.fileName,
+              name: d.name,
+            }));
+  
+          setAvailableImages(designs);
+          const randomItems = generateRandomItems(designs.map(d => d.id));
+          setGalleryItems(randomItems);
+  
+          // Cache
+          localStorage.setItem(CACHE_KEYS.imageList, JSON.stringify(designs));
           localStorage.setItem(CACHE_KEYS.timestamp, JSON.stringify(Date.now()));
-        } catch (error) {
-          console.error('Error saving image list to localStorage:', error);
+        } else {
+          console.log("No designs found in DB.");
+          setAvailableImages([]);
+          setGalleryItems([]);
         }
-        
-      } catch (error) {
-        console.error('Error fetching available images:', error);
-        // Fallback to empty array if Firebase fails
+      } catch (err) {
+        console.error("Error fetching designs from Realtime Database:", err);
         setAvailableImages([]);
         setGalleryItems([]);
       } finally {
         setIsLoadingImageList(false);
       }
     };
-
-    fetchAvailableImages();
-  }, []);
+  
+    fetchAvailableDesigns();
+  }, []);  
 
   // Fetch image URLs for selected gallery items
   useEffect(() => {
-    if (galleryItems.length === 0) return;
-    
+    if (galleryItems.length === 0 || availableImages.length === 0) return;
+  
     const fetchImageURLs = async () => {
-      // Try to get cached URLs first
-      let cachedUrls = {};
-      try {
-        if (isCacheValid()) {
-          const cachedUrlsString = localStorage.getItem(CACHE_KEYS.imageUrls);
-          if (cachedUrlsString) {
-            cachedUrls = JSON.parse(cachedUrlsString);
-          }
-        }
-      } catch (error) {
-        console.error('Error reading cached URLs:', error);
-      }
-      
-      // Set any cached URLs we already have
+      const cachedUrls = isCacheValid()
+        ? JSON.parse(localStorage.getItem(CACHE_KEYS.imageUrls) || '{}')
+        : {};
+  
       const urlsToSet = {};
       const itemsToFetch = [];
-      
-      for (const item of galleryItems) {
-        if (cachedUrls[item]) {
-          urlsToSet[item] = cachedUrls[item];
+  
+      for (const id of galleryItems) {
+        const design = availableImages.find(d => d.id === id);
+        if (!design) continue;
+  
+        if (cachedUrls[id]) {
+          urlsToSet[id] = cachedUrls[id];
         } else {
-          itemsToFetch.push(item);
+          itemsToFetch.push(design);
         }
       }
-      
-      // Set cached URLs immediately
+  
       if (Object.keys(urlsToSet).length > 0) {
-        setImageURLs(urlsToSet);
+        setImageURLs(prev => ({ ...prev, ...urlsToSet }));
       }
-      
-      // Fetch missing URLs
-      if (itemsToFetch.length > 0) {
-        const newUrls = { ...cachedUrls };
-        
-        for (const item of itemsToFetch) {
-          const imgRef = storageRef(storage, `Designs/${item}.jpg`);
-          try {
-            const downloadUrl = await getDownloadURL(imgRef);
-            newUrls[item] = downloadUrl;
-            // Update state immediately as each URL is fetched
-            setImageURLs(prev => ({ ...prev, [item]: downloadUrl }));
-          } catch (err) {
-            console.error(`Failed to fetch download URL for design ${item}:`, err);
-          }
-        }
-        
-        // Save all URLs to localStorage (both old and new)
+  
+      for (const design of itemsToFetch) {
         try {
-          localStorage.setItem(CACHE_KEYS.imageUrls, JSON.stringify(newUrls));
-          localStorage.setItem(CACHE_KEYS.timestamp, JSON.stringify(Date.now()));
-        } catch (error) {
-          console.error('Error saving URLs to localStorage:', error);
+          const imgRef = storageRef(storage, `Designs/${design.fileName}`);
+          const downloadUrl = await getDownloadURL(imgRef);
+          setImageURLs(prev => ({ ...prev, [design.id]: downloadUrl }));
+          cachedUrls[design.id] = downloadUrl;
+        } catch (err) {
+          console.error(`Failed to fetch URL for ${design.fileName}`, err);
         }
       }
+  
+      // Update cache
+      localStorage.setItem(CACHE_KEYS.imageUrls, JSON.stringify(cachedUrls));
+      localStorage.setItem(CACHE_KEYS.timestamp, JSON.stringify(Date.now()));
     };
-
+  
     fetchImageURLs();
-  }, [galleryItems]);
+  }, [galleryItems, availableImages]);  
 
   // Show loading state while fetching image list
   if (isLoadingImageList) {

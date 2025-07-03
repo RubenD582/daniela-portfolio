@@ -2,7 +2,8 @@
 import React, { useState, useEffect } from "react";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { initializeApp } from "firebase/app";
-import { getStorage, ref as storageRef, getDownloadURL, listAll } from "firebase/storage";
+import { getStorage, ref as storageRef, getDownloadURL } from "firebase/storage";
+import { getDatabase, ref as dbRef, get } from "firebase/database";
 
 // Firebase config
 export const firebaseConfig = {
@@ -19,15 +20,17 @@ export const firebaseConfig = {
 // Initialize Firebase
 let firebaseApp;
 let storage;
+let database;
 
 try {
   firebaseApp = initializeApp(firebaseConfig);
   storage = getStorage(firebaseApp);
+  database = getDatabase(firebaseApp);
 } catch (error) {
   console.error("Firebase initialization error:", error);
 }
 
-// Enhanced Design Card
+// Design Card Component
 const DesignCard = ({ design, index, imageURL, openLightbox, inView }) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
@@ -38,13 +41,9 @@ const DesignCard = ({ design, index, imageURL, openLightbox, inView }) => {
     setImageLoaded(true);
   };
 
-  const cardClasses = "group cursor-pointer relative overflow-hidden bg-white border border-gray-100 transition-all duration-300 break-inside-avoid mb-6";
-
-  const imageClasses = "w-full h-full object-cover transition-all duration-500 group-hover:scale-110";
-
   return (
     <div
-      className={cardClasses}
+      className="group cursor-pointer relative overflow-hidden bg-white border border-gray-100 transition-all duration-300 break-inside-avoid mb-6"
       data-index={index}
       style={{
         animationName: inView ? "slideInUp" : "none",
@@ -53,24 +52,22 @@ const DesignCard = ({ design, index, imageURL, openLightbox, inView }) => {
         animationFillMode: "forwards",
         animationDelay: `${index * 50}ms`,
         opacity: inView ? 1 : 0,
-        transform: inView ? "translateY(0)" : "translateY(30px)"
+        transform: inView ? "translateY(0)" : "translateY(30px)",
       }}
     >
       <div className="relative overflow-hidden h-full">
-        {/* Loading placeholder */}
         {!imageLoaded && (
           <div className="w-full h-72 bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
             <div className="w-8 h-8 border-2 border-gray-300 border-t-black rounded-full animate-spin"></div>
           </div>
         )}
-        
-        {/* Main image */}
+
         {imageURL ? (
           <img
             src={imageURL}
             alt={design.title}
-            className={`${imageClasses} ${
-              imageLoaded ? 'opacity-100' : 'opacity-0 absolute inset-0'
+            className={`w-full h-full object-cover transition-all duration-500 group-hover:scale-110 ${
+              imageLoaded ? "opacity-100" : "opacity-0 absolute inset-0"
             }`}
             loading="lazy"
             onLoad={handleImageLoad}
@@ -83,7 +80,6 @@ const DesignCard = ({ design, index, imageURL, openLightbox, inView }) => {
           </div>
         )}
 
-        {/* Error state */}
         {imageError && (
           <div className="w-full h-72 bg-gray-50 flex items-center justify-center">
             <div className="text-gray-400 text-center">
@@ -107,72 +103,73 @@ export default function Designs() {
 
   const visibleDesigns = designs.slice(0, visibleCount);
 
-  // Intersection Observer for scroll animations
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             const index = parseInt(entry.target.dataset.index);
-            setInViewItems(prev => new Set([...prev, index]));
+            setInViewItems((prev) => new Set([...prev, index]));
           }
         });
       },
-      { threshold: 0.1, rootMargin: '50px' }
+      { threshold: 0.1, rootMargin: "50px" }
     );
 
-    const elements = document.querySelectorAll('[data-index]');
-    elements.forEach(el => observer.observe(el));
+    const elements = document.querySelectorAll("[data-index]");
+    elements.forEach((el) => observer.observe(el));
 
     return () => observer.disconnect();
   }, [visibleDesigns]);
 
-  // Discover and fetch all images (your original Firebase logic)
   useEffect(() => {
-    const discoverAndFetchImages = async () => {
-      if (!storage) {
+    const fetchDesignsFromDatabase = async () => {
+      if (!database || !storage) {
         setLoading(false);
         return;
       }
-
+  
       try {
-        const designsRef = storageRef(storage, 'Designs/');
-        const result = await listAll(designsRef);
-        
-        const discoveredDesigns = result.items.map((item, index) => {
-          const filename = item.name;
-          const id = parseInt(filename.split('.')[0]) || index + 1;
-          
-          return {
-            id: id,
-            title: `Design ${id}`,
-            storageRef: item
-          };
-        });
-
-        discoveredDesigns.sort((a, b) => a.id - b.id);
-        setDesigns(discoveredDesigns);
-
-        const urlPromises = discoveredDesigns.map(async (design) => {
+        const designsSnapshot = await get(dbRef(database, "designs"));
+        const designsData = designsSnapshot.val();
+  
+        if (!designsData) {
+          console.warn("No designs found in database.");
+          setLoading(false);
+          return;
+        }
+  
+        const entries = Object.entries(designsData);
+        const formattedDesigns = entries.map(([key, value]) => ({
+          id: value.id || key,
+          title: value.title || `Design ${key}`,
+          fileName: value.fileName, // <- important
+          archived: value.archived || false,
+        })).filter(d => d.fileName); // <- skip if fileName is missing
+  
+        formattedDesigns.sort((a, b) => a.id - b.id);
+        setDesigns(formattedDesigns);
+  
+        const urlPromises = formattedDesigns.map(async (design) => {
           try {
-            const downloadUrl = await getDownloadURL(design.storageRef);
-            setImageURLs(prev => ({ ...prev, [design.id]: downloadUrl }));
+            const imageRef = storageRef(storage, `Designs/${design.fileName}`);
+            const downloadUrl = await getDownloadURL(imageRef);
+            setImageURLs((prev) => ({ ...prev, [design.id]: downloadUrl }));
           } catch (err) {
-            console.warn(`Failed to get URL for design ${design.id}`);
+            console.warn(`Failed to get image for design ${design.id}:`, err);
           }
         });
-
+  
         await Promise.all(urlPromises);
         setLoading(false);
-        
       } catch (error) {
-        console.error("Error discovering images:", error);
+        console.error("Error fetching designs from Realtime Database:", error);
         setLoading(false);
       }
     };
-
-    discoverAndFetchImages();
-  }, []);
+  
+    fetchDesignsFromDatabase();
+  }, []);  
 
   const openLightbox = (design, e) => {
     if (e) e.stopPropagation();
@@ -182,7 +179,7 @@ export default function Designs() {
   const closeLightbox = () => setSelectedImage(null);
 
   const navigateLightbox = (direction) => {
-    const currentIndex = designs.findIndex(d => d.id === selectedImage.id);
+    const currentIndex = designs.findIndex((d) => d.id === selectedImage.id);
     let newIndex;
     if (direction === "next") {
       newIndex = (currentIndex + 1) % designs.length;
@@ -192,41 +189,23 @@ export default function Designs() {
     setSelectedImage(designs[newIndex]);
   };
 
-  const loadMore = () => setVisibleCount(prev => prev + 20);
+  const loadMore = () => setVisibleCount((prev) => prev + 20);
 
   return (
     <div className="min-h-screen bg-white pt-[60px]">
-      {/* Enhanced hero header */}
       <div className="relative overflow-hidden bg-gradient-to-b from-gray-50 to-white">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-gray-100 via-white to-white"></div>
         <div className="relative text-center mt-20">
           <div className="max-w-4xl mx-auto px-6">
-            {loading ? (
-              // Skeleton loading for title and subtitle
-              <>
-                <h2 className="text-4xl md:text-5xl font-extralight text-stone-900 mb-3">
-                  Portfolio Designs
-                </h2>
-              </>
-            ) : (
-              // Actual content
-              <>
-                <h2 className="text-4xl md:text-5xl font-extralight text-stone-900 mb-3">
-                  Portfolio Designs
-                </h2>
-                {/* <p className="text-gray-600 text-lg font-light tracking-wide font-sans">
-                  A curated collection of {designs.length} creative works
-                </p> */}
-              </>
-            )}
+            <h2 className="text-4xl md:text-5xl font-extralight text-stone-900 mb-3">
+              Portfolio Designs
+            </h2>
           </div>
         </div>
       </div>
 
-      {/* Gallery */}
       <div className="max-w-7xl mx-auto px-6 py-16">
         {loading ? (
-          // Loading skeleton gallery
           <div className="columns-2 sm:columns-3 lg:columns-4 xl:columns-5 gap-6">
             {Array.from({ length: 20 }).map((_, idx) => (
               <div key={idx} className="break-inside-avoid mb-6">
@@ -237,7 +216,6 @@ export default function Designs() {
             ))}
           </div>
         ) : (
-          // Actual gallery
           <div className="columns-2 sm:columns-3 lg:columns-4 xl:columns-5 gap-6">
             {visibleDesigns.map((design, index) => (
               <DesignCard
@@ -252,7 +230,6 @@ export default function Designs() {
           </div>
         )}
 
-        {/* Enhanced load more */}
         {!loading && visibleCount < designs.length && (
           <div className="text-center mt-16">
             <button
@@ -268,12 +245,11 @@ export default function Designs() {
         )}
       </div>
 
-      {/* Premium lightbox */}
       {selectedImage && (
-        <div 
+        <div
           onClick={closeLightbox}
-          className="fixed inset-0 bg-white/70 backdrop-blur-sm z-50 flex items-center justify-center">
-          {/* Close button */}
+          className="fixed inset-0 bg-white/70 backdrop-blur-sm z-50 flex items-center justify-center"
+        >
           <button
             onClick={closeLightbox}
             className="absolute top-8 right-8 w-12 h-12 rounded-full bg-gray-100 hover:bg-black hover:text-white transition-all duration-300 flex items-center justify-center z-20"
@@ -281,7 +257,6 @@ export default function Designs() {
             <X size={20} />
           </button>
 
-          {/* Navigation */}
           <button
             onClick={() => navigateLightbox("prev")}
             className="absolute left-8 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-gray-100/25 hover:bg-black/25 hover:text-white transition-all duration-300 flex items-center justify-center z-20"
@@ -295,14 +270,12 @@ export default function Designs() {
             <ChevronRight size={20} />
           </button>
 
-          {/* Image */}
-          <div className=" mx-auto px-20 text-center">
+          <div className="mx-auto px-20 text-center">
             <img
               src={imageURLs[selectedImage.id]}
               alt={selectedImage.title}
               className="w-full h-auto max-h-[50vh] object-contain mb-8 shadow-2xl"
             />
-            
             <div className="space-y-4">
               <div className="text-xs uppercase tracking-widest text-black">
                 Design Collection • {new Date().getFullYear()}
@@ -322,26 +295,6 @@ export default function Designs() {
             opacity: 1;
             transform: translateY(0);
           }
-        }
-        
-        @keyframes shimmer {
-          0% {
-            background-position: -200% 0;
-          }
-          100% {
-            background-position: 200% 0;
-          }
-        }
-        
-        .animate-shimmer {
-          animation: shimmer 2s infinite;
-        }
-        
-        .columns-2 > div,
-        .columns-3 > div,
-        .columns-4 > div,
-        .columns-5 > div {
-          break-inside: avoid;
         }
       `}</style>
     </div>
