@@ -1,12 +1,8 @@
 import React, { useState } from 'react';
 import { ArrowRight, Star } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { scrollToElement } from '../components/scrollUtils';
-import StatItem from '../components/Stats';
-import GalleryPreview from './GalleryPreview';
-import ContactSection from './Contact';
 
-export const faqs = [
+const faqs = [
   {
     question: 'How long do gel nails last?',
     answer: 'Gel nails typically last 2-4 weeks with proper care. The longevity depends on your lifestyle, nail growth rate, and aftercare routine. Most clients book touch-ups every 3 weeks to maintain that fresh, salon-perfect look.',
@@ -27,34 +23,6 @@ export const faqs = [
     question: 'How do I make my manicure last longer?',
     answer: 'Wear gloves when cleaning, use cuticle oil daily, avoid using nails as tools, and book regular touch-ups. I\'ll provide specific aftercare instructions and recommend products to extend your manicure\'s lifespan.',
   },
-  {
-    question: 'Do you offer nail art and custom designs?',
-    answer: 'Yes! I love creating unique nail art, from simple accent nails to intricate hand-painted designs. Whether you want seasonal themes, special occasion nails, or personalized artwork, we can bring your vision to life.',
-  },
-  {
-    question: 'How often should I get my nails done?',
-    answer: 'Most clients visit every 2-4 weeks depending on the service. Gel manicures typically need refreshing every 3 weeks, while maintenance appointments for nail health can be monthly. I\'ll recommend the best schedule for your lifestyle and nail goals.',
-  },
-  {
-    question: 'What if I have an allergic reaction to products?',
-    answer: 'Your safety is my priority! I use high-quality, professional products and can perform patch tests for sensitive clients. If you have known allergies, please inform me during booking so I can select appropriate hypoallergenic alternatives.',
-  },
-  {
-    question: 'Can I bring my own nail polish?',
-    answer: 'While I stock professional-grade polishes in many colors, you\'re welcome to bring your own special shades! Just ensure they\'re compatible with professional application techniques for the best results.',
-  },
-  {
-    question: 'What are your prices for different services?',
-    answer: 'Prices vary by service: basic manicures start around R200-300, gel manicures R350-450, and nail art R450-600+ depending on complexity. I offer package deals for regular clients and seasonal promotions. Contact me for a detailed price list!',
-  },
-  {
-    question: 'How do I book an appointment?',
-    answer: 'You can book through my website, WhatsApp, or call directly. I recommend booking 1-2 weeks in advance, especially for weekends and special occasions. Cancellations require 24-hour notice to avoid fees.',
-  },
-  {
-    question: 'Do you offer mobile nail services?',
-    answer: 'Yes! I provide mobile services for special events, bridal parties, or clients who prefer the convenience of home appointments. Mobile service includes a small travel fee depending on location within my service area.',
-  },
 ];
 
 export default function Home() {
@@ -65,106 +33,133 @@ export default function Home() {
     setOpenIndex(prev => (prev === index ? null : index));
   };
 
-  const handleGalleryClick = () => {
-    navigate('/designs');
-  };
-
-  const visibilityObject = {
-    services: true,
-    testimonials: true,
-    faq: true,
-    gallery: true,
-    about: true
-  };
-
   return (
-    <div className="w-full bg-white">
+    <div style={{ backgroundColor: 'white', width: '100%', margin: 0, padding: 0 }}>
       {/* Hero Section */}
-      <section id="hero" className="relative h-screen w-full flex items-center justify-center bg-white overflow-hidden">
-        <div className="relative z-10 text-center px-4 sm:px-6 max-w-5xl w-full">
-          {/* Professional Badge */}
-          <div className="inline-flex items-center mb-6 px-4 py-2 bg-white bg-opacity-80 backdrop-blur-sm rounded-sm shadow-sm">
-            <p className="text-xs text-gray-600 font-medium uppercase tracking-widest">
-              Certified Nail Technician
-            </p>
+      <section style={{ 
+        height: '100vh', 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center',
+        backgroundColor: 'white',
+        padding: '0 20px'
+      }}>
+        <div style={{ textAlign: 'center', maxWidth: '800px' }}>
+          <div style={{ 
+            display: 'inline-flex', 
+            alignItems: 'center', 
+            marginBottom: '24px', 
+            padding: '8px 16px', 
+            backgroundColor: 'rgba(255,255,255,0.9)',
+            fontSize: '12px',
+            color: '#666',
+            textTransform: 'uppercase',
+            letterSpacing: '2px'
+          }}>
+            Certified Nail Technician
           </div>
 
-          {/* Main Heading */}
-          <h1 className="text-4xl sm:text-6xl lg:text-8xl font-light text-gray-900 mb-8 tracking-tight leading-none">
+          <h1 style={{ 
+            fontSize: 'clamp(2rem, 8vw, 5rem)', 
+            fontWeight: '300', 
+            color: '#111', 
+            marginBottom: '32px',
+            lineHeight: '1.1',
+            margin: '0 0 32px 0'
+          }}>
             PRECISION
-            <span className="block mt-2 sm:mt-3">
-              & <span className="text-yellow-600">ELEGANCE</span>
-            </span>
+            <br />
+            & <span style={{ color: '#d97706' }}>ELEGANCE</span>
           </h1>
 
-          {/* Tagline */}
-          <p className="text-sm sm:text-lg text-gray-600 mb-12 max-w-2xl mx-auto leading-relaxed font-light">
+          <p style={{ 
+            fontSize: '18px', 
+            color: '#666', 
+            marginBottom: '48px', 
+            lineHeight: '1.6',
+            maxWidth: '600px',
+            margin: '0 auto 48px auto'
+          }}>
             Transforming your nails into works of art with meticulous attention to detail and contemporary elegance.
           </p>
 
-          {/* Call-to-Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 mt-14 justify-center items-center">
-            <button
-              onClick={() => scrollToElement('contact', 1500)}
-              className="group relative bg-gray-900 text-white px-12 sm:px-14 py-4 text-sm font-medium uppercase tracking-wider hover:bg-gray-800 transition-colors duration-200 flex items-center justify-center w-full sm:w-auto"
-            >
-              <span className="relative z-10">Book Now</span>
-              <ArrowRight className="ml-3 w-4 h-4" />
+          <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <button style={{
+              backgroundColor: '#111',
+              color: 'white',
+              padding: '16px 32px',
+              border: 'none',
+              fontSize: '14px',
+              textTransform: 'uppercase',
+              letterSpacing: '1px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
+            }}>
+              Book Now
+              <ArrowRight size={16} />
             </button>
             
             <button 
-              onClick={handleGalleryClick}
-              className="group relative text-gray-700 hover:text-gray-900 transition-colors duration-200 text-sm font-medium uppercase tracking-wider px-12 sm:px-14 py-4 border border-gray-200 hover:border-gray-400 flex items-center justify-center bg-white w-full sm:w-auto"
+              onClick={() => navigate('/designs')}
+              style={{
+                backgroundColor: 'white',
+                color: '#333',
+                padding: '16px 32px',
+                border: '1px solid #ddd',
+                fontSize: '14px',
+                textTransform: 'uppercase',
+                letterSpacing: '1px',
+                cursor: 'pointer'
+              }}
             >
-              <span className="relative z-10">View Gallery</span>
+              View Gallery
             </button>
           </div>
         </div>
-
-        {/* Scroll Indicator */}
-        <div className="hidden md:block absolute bottom-8 left-1/2 transform -translate-x-1/2">
-          <div className="flex flex-col items-center">
-            <span className="text-xs text-gray-500 mb-3 uppercase tracking-widest">
-              Scroll Down
-            </span>
-            <div className="w-px h-12 bg-gradient-to-b from-gray-400 to-transparent"></div>
-          </div>
-        </div>
-
-        {/* Corner Decorative Elements */}
-        <div className="hidden lg:block absolute top-24 left-8 w-8 h-8 border-l border-t border-gray-200"></div>
-        <div className="hidden lg:block absolute top-24 right-8 w-8 h-8 border-r border-t border-gray-200"></div>
-        <div className="hidden lg:block absolute bottom-8 left-8 w-8 h-8 border-l border-b border-gray-200"></div>
-        <div className="hidden lg:block absolute bottom-8 right-8 w-8 h-8 border-r border-b border-gray-200"></div>
       </section>
 
       {/* Services Section */}
-      <section id="services" className="py-24 sm:py-32 bg-white w-full">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Header */}
-          <div className="text-center mb-20 sm:mb-24">
-            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-light text-black mb-8 tracking-tight">
+      <section style={{ padding: '80px 20px', backgroundColor: 'white' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: '60px' }}>
+            <h2 style={{ 
+              fontSize: 'clamp(2rem, 6vw, 4rem)', 
+              fontWeight: '300', 
+              color: '#111', 
+              marginBottom: '20px',
+              margin: '0 0 20px 0'
+            }}>
               Professional Services
             </h2>
-            <p className="text-gray-600 font-light max-w-2xl mx-auto text-base sm:text-lg leading-relaxed">
+            <p style={{ 
+              color: '#666', 
+              fontSize: '18px', 
+              maxWidth: '600px', 
+              margin: '0 auto',
+              lineHeight: '1.6'
+            }}>
               Expert nail care and artistry with premium products and meticulous attention to detail.
             </p>
           </div>
 
-          {/* Services Grid */}
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
+            gap: '30px',
+            marginBottom: '60px'
+          }}>
             {[
               {
                 title: 'Gel & Acrylic Overlays',
                 description: 'Professional overlays on your natural nails for strength and lasting beauty.',
-                originalPrice: 'R200',
                 price: 'FROM R160',
                 discount: '20% OFF'
               },
               {
                 title: 'Extensions & Sculptures',
                 description: 'Expert extension services to create perfect length and elegant shape.',
-                originalPrice: 'R280',
                 price: 'FROM R210',
                 discount: '25% OFF',
                 popular: true
@@ -172,68 +167,91 @@ export default function Home() {
               {
                 title: 'Nail Art & Services',
                 description: 'Custom nail art, professional fills, repairs and maintenance services.',
-                originalPrice: 'R15',
                 price: 'FROM R5',
                 discount: '67% OFF'
               }
             ].map((service, idx) => (
               <div
                 key={idx}
-                className="group bg-white p-8 sm:p-12 cursor-pointer hover:-translate-y-2 transition-transform duration-200 relative border border-gray-100 hover:border-gray-200 shadow-sm hover:shadow-lg"
+                style={{
+                  backgroundColor: 'white',
+                  padding: '40px',
+                  border: '1px solid #e5e5e5',
+                  position: 'relative'
+                }}
               >
-                {/* Most Popular Banner */}
                 {service.popular && (
-                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-10">
-                    <div className="bg-black text-white px-4 sm:px-6 py-2 text-xs uppercase tracking-widest font-medium">
-                      Most Popular
-                    </div>
-                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 sm:border-l-6 sm:border-r-6 sm:border-t-6 border-l-transparent border-r-transparent border-t-black"></div>
+                  <div style={{
+                    position: 'absolute',
+                    top: '-16px',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    backgroundColor: '#111',
+                    color: 'white',
+                    padding: '8px 20px',
+                    fontSize: '12px',
+                    textTransform: 'uppercase'
+                  }}>
+                    Most Popular
                   </div>
                 )}
 
-                {/* Content */}
-                <div className="h-full flex flex-col">
-                  <div className="mb-2">
-                    <span className="text-sm sm:text-base text-gray-400 uppercase tracking-widest">
-                      {String(idx + 1).padStart(2, '0')}
-                    </span>
+                <div style={{ marginBottom: '8px' }}>
+                  <span style={{ fontSize: '14px', color: '#999', textTransform: 'uppercase' }}>
+                    {String(idx + 1).padStart(2, '0')}
+                  </span>
+                </div>
+
+                <h3 style={{ 
+                  fontSize: '20px', 
+                  fontWeight: '300', 
+                  color: '#111', 
+                  marginBottom: '16px',
+                  margin: '0 0 16px 0'
+                }}>
+                  {service.title}
+                </h3>
+
+                <p style={{ 
+                  color: '#666', 
+                  lineHeight: '1.6', 
+                  marginBottom: '30px',
+                  fontSize: '15px'
+                }}>
+                  {service.description}
+                </p>
+
+                <div style={{ 
+                  paddingTop: '20px', 
+                  borderTop: '1px solid #f0f0f0',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'flex-end'
+                }}>
+                  <div style={{ fontSize: '20px', fontWeight: '300', color: '#111' }}>
+                    {service.price}
                   </div>
-
-                  <h3 className="text-lg sm:text-xl font-light text-black mb-4 sm:mb-6 leading-tight">
-                    {service.title}
-                  </h3>
-
-                  <p className="text-gray-500 leading-relaxed mb-auto text-sm sm:text-base">
-                    {service.description}
-                  </p>
-
-                  {/* Pricing */}
-                  <div className="mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-gray-100">
-                    <div className="flex items-end justify-between">
-                      <div>
-                        <div className="text-xs sm:text-sm text-gray-400 mb-1 font-light line-through">
-                          WAS {service.originalPrice}
-                        </div>
-                        <div className="text-xl sm:text-2xl font-light text-black">
-                          {service.price}
-                        </div>
-                      </div>
-                      
-                      <div className="text-xs sm:text-sm font-medium text-black">
-                        {service.discount}
-                      </div>
-                    </div>
+                  <div style={{ fontSize: '14px', fontWeight: '500', color: '#111' }}>
+                    {service.discount}
                   </div>
                 </div>
               </div>
             ))}
           </div>
 
-          {/* CTA */}
-          <div className="text-center mt-16 sm:mt-20">
+          <div style={{ textAlign: 'center' }}>
             <button
               onClick={() => navigate('/services')}
-              className="text-black border border-black px-12 sm:px-16 py-4 font-light text-sm uppercase tracking-widest hover:bg-black hover:text-white transition-colors duration-200 bg-white"
+              style={{
+                backgroundColor: 'white',
+                color: '#111',
+                border: '1px solid #111',
+                padding: '16px 40px',
+                fontSize: '14px',
+                textTransform: 'uppercase',
+                letterSpacing: '1px',
+                cursor: 'pointer'
+              }}
             >
               View All Services
             </button>
@@ -241,18 +259,29 @@ export default function Home() {
         </div>
       </section>
 
-      <GalleryPreview isVisible={visibilityObject} />
-
       {/* Testimonials */}
-      <section id="testimonials" className="py-20 sm:py-24 bg-gradient-to-br from-gray-50 to-white w-full">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16 sm:mb-20">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light text-gray-900 mb-6">
+      <section style={{ 
+        padding: '80px 20px', 
+        backgroundColor: '#f9f9f9'
+      }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: '60px' }}>
+            <h2 style={{ 
+              fontSize: 'clamp(2rem, 5vw, 3rem)', 
+              fontWeight: '300', 
+              color: '#111', 
+              marginBottom: '20px',
+              margin: '0 0 20px 0'
+            }}>
               Client Stories
             </h2>
           </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
+            gap: '30px'
+          }}>
             {[
               {
                 name: 'Ruben',
@@ -269,17 +298,27 @@ export default function Home() {
             ].map((testimonial, idx) => (
               <div
                 key={idx}
-                className="bg-white p-6 sm:p-8 border border-gray-100 shadow-sm"
+                style={{
+                  backgroundColor: 'white',
+                  padding: '30px',
+                  border: '1px solid #e5e5e5'
+                }}
               >
-                <div className="flex mb-4">
+                <div style={{ display: 'flex', marginBottom: '16px' }}>
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                    <Star key={i} size={16} fill="#fbbf24" color="#fbbf24" />
                   ))}
                 </div>
-                <p className="text-gray-600 font-light text-sm leading-relaxed italic mb-6">
+                <p style={{ 
+                  color: '#666', 
+                  fontSize: '14px', 
+                  lineHeight: '1.6', 
+                  marginBottom: '20px',
+                  fontStyle: 'italic'
+                }}>
                   "{testimonial.text}"
                 </p>
-                <div className="text-gray-900 font-light text-sm">— {testimonial.name}</div>
+                <div style={{ color: '#111', fontSize: '14px' }}>— {testimonial.name}</div>
               </div>
             ))}
           </div>
@@ -287,40 +326,84 @@ export default function Home() {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-20 sm:py-24 bg-white w-full" id="faq">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16 sm:mb-20">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light text-gray-900 mb-6">
+      <section style={{ padding: '80px 20px', backgroundColor: 'white' }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: '60px' }}>
+            <h2 style={{ 
+              fontSize: 'clamp(2rem, 5vw, 3rem)', 
+              fontWeight: '300', 
+              color: '#111',
+              margin: '0 0 20px 0'
+            }}>
               Frequently Asked
             </h2>
           </div>
 
-          <div className="space-y-2">
+          <div>
             {faqs.map((item, index) => {
               const isOpen = openIndex === index;
               return (
                 <div
                   key={index}
-                  className="bg-white border border-gray-100 overflow-hidden"
+                  style={{
+                    backgroundColor: 'white',
+                    border: '1px solid #e5e5e5',
+                    marginBottom: '8px'
+                  }}
                 >
                   <button
                     onClick={() => toggleFAQ(index)}
-                    className="w-full flex justify-between items-center p-6 sm:p-8 text-left hover:bg-gray-50 transition-colors duration-200"
+                    style={{
+                      width: '100%',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      padding: '24px',
+                      textAlign: 'left',
+                      backgroundColor: 'white',
+                      border: 'none',
+                      cursor: 'pointer',
+                      fontSize: '16px',
+                      color: '#111'
+                    }}
                   >
-                    <span className="text-gray-900 font-light text-base sm:text-lg pr-4">{item.question}</span>
-                    <div className={`w-6 h-6 flex items-center justify-center flex-shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-45' : ''}`}>
-                      <div className="w-4 h-px bg-gray-400"></div>
-                      <div className="w-px h-4 bg-gray-400 absolute"></div>
+                    <span>{item.question}</span>
+                    <div style={{
+                      width: '24px',
+                      height: '24px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      transform: isOpen ? 'rotate(45deg)' : 'rotate(0deg)',
+                      transition: 'transform 0.2s'
+                    }}>
+                      <div style={{
+                        width: '16px',
+                        height: '1px',
+                        backgroundColor: '#999',
+                        position: 'absolute'
+                      }}></div>
+                      <div style={{
+                        width: '1px',
+                        height: '16px',
+                        backgroundColor: '#999',
+                        position: 'absolute'
+                      }}></div>
                     </div>
                   </button>
                   
-                  <div className={`overflow-hidden transition-all duration-200 ${isOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}>
-                    <div className="px-6 sm:px-8 pb-6 sm:pb-8">
-                      <p className="text-gray-600 font-light leading-relaxed text-sm sm:text-base">
+                  {isOpen && (
+                    <div style={{ padding: '0 24px 24px 24px' }}>
+                      <p style={{ 
+                        color: '#666', 
+                        lineHeight: '1.6',
+                        margin: 0,
+                        fontSize: '15px'
+                      }}>
                         {item.answer}
                       </p>
                     </div>
-                  </div>
+                  )}
                 </div>
               );
             })}
@@ -328,21 +411,31 @@ export default function Home() {
         </div>
       </section>
 
-      <ContactSection />
-
       {/* Footer */}
-      <footer className="py-12 bg-gray-900 text-gray-400 w-full">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <div 
-              className="text-xl sm:text-2xl text-white font-light cursor-pointer"
-              onClick={() => scrollToElement('hero', 1500)}
-            >
-              Daniela Alves
-            </div>
-            <div className="text-xs sm:text-sm font-light text-center">
-              &copy; {new Date().getFullYear()} Daniela Alves. All rights reserved.
-            </div>
+      <footer style={{ 
+        padding: '40px 20px', 
+        backgroundColor: '#111', 
+        color: '#999'
+      }}>
+        <div style={{ 
+          maxWidth: '1200px', 
+          margin: '0 auto',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '20px'
+        }}>
+          <div style={{ 
+            fontSize: '24px', 
+            color: 'white', 
+            fontWeight: '300',
+            cursor: 'pointer'
+          }}>
+            Daniela Alves
+          </div>
+          <div style={{ fontSize: '14px', textAlign: 'center' }}>
+            &copy; {new Date().getFullYear()} Daniela Alves. All rights reserved.
           </div>
         </div>
       </footer>
