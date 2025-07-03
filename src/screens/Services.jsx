@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowRight } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
 
 const AllServicesPage = () => {
   const [animatedItems, setAnimatedItems] = useState(new Set());
+  const location = useLocation();
 
   // Function to generate WhatsApp booking link
   const generateWhatsAppLink = (serviceName, price, priceNote = "") => {
@@ -33,12 +35,11 @@ Thank you!`;
         });
       },
       {
-        threshold: 0.6,
+        threshold: 0.2,
         rootMargin: '50px'
       }
     );
 
-    // Small delay to ensure DOM is ready
     const timer = setTimeout(() => {
       const serviceItems = document.querySelectorAll('[data-item-id]');
       serviceItems.forEach(item => observer.observe(item));
@@ -49,6 +50,39 @@ Thank you!`;
       observer.disconnect();
     };
   }, []);
+
+  // Handle scroll to category from URL parameter - triggers on location change
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    const categoryParam = urlParams.get('category');
+    
+    if (categoryParam !== null) {
+      const categoryIndex = parseInt(categoryParam);
+      
+      // Function to attempt scrolling
+      const scrollToCategory = () => {
+        const element = document.getElementById(`category-${categoryIndex}`);
+        
+        if (element) {
+          // Force show the element first (in case it's hidden by animations)
+          element.style.opacity = '1';
+          element.style.transform = 'translateX(0)';
+          
+          element.scrollIntoView({ 
+            behavior: 'smooth',
+            block: 'center'
+          });
+          
+          return true;
+        }
+        return false;
+      };
+
+      // Try scrolling with shorter delays
+      setTimeout(() => scrollToCategory(), 100);
+      setTimeout(() => scrollToCategory(), 300);
+    }
+  }, [location]);
 
   const serviceCategories = [
     {
@@ -166,11 +200,12 @@ Thank you!`;
               
               {/* Service Category Name */}
               <div 
+                id={`category-${categoryIndex}`}
                 data-item-id={`category-${categoryIndex}`}
-                className={`transition-all duration-1000 ease-out ${
+                className={`category-${categoryIndex} transition-all duration-600 ease-out ${
                   animatedItems.has(`category-${categoryIndex}`) 
                     ? 'opacity-100 translate-x-0' 
-                    : 'opacity-0 -translate-x-8'
+                    : 'opacity-0 -translate-x-4'
                 }`}
               >
                 <h2 className="text-4xl font-light text-stone-900">{category.categoryName}</h2>
@@ -191,10 +226,10 @@ Thank you!`;
                       className={`block p-6 border border-transparent hover:border-stone-300 transition-all duration-300 ease-out cursor-pointer ${
                         animatedItems.has(itemId) 
                           ? 'opacity-100 translate-y-0' 
-                          : 'opacity-0 translate-y-4'
+                          : 'opacity-0 translate-y-2'
                       }`}
                       style={{
-                        transitionDelay: animatedItems.has(itemId) ? '0ms' : `${serviceIndex * 150}ms`
+                        transitionDelay: animatedItems.has(itemId) ? '0ms' : `${serviceIndex * 100}ms`
                       }}
                     >
                       <div className="mb-2">
@@ -228,10 +263,10 @@ Thank you!`;
         {/* Contact Section */}
         <div 
           data-item-id="contact-section"
-          className={`border-t border-stone-200 pt-12 transition-all duration-1200 ease-out ${
+          className={`border-t border-stone-200 pt-12 transition-all duration-700 ease-out ${
             animatedItems.has('contact-section') 
               ? 'opacity-100 translate-y-0' 
-              : 'opacity-0 translate-y-8'
+              : 'opacity-0 translate-y-4'
           }`}
         >
           <div className="text-center">
@@ -242,18 +277,18 @@ Thank you!`;
               Contact me for consultations, custom requests, or any questions about treatments.
             </p>
             <div className="space-y-4">
-              <div>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                 <a 
                   href={generateWhatsAppLink("General Consultation", "Free", "")}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-block bg-stone-900 text-white px-8 py-3 hover:bg-stone-800 transition-colors duration-300 font-light mr-4"
+                  className="inline-block bg-stone-900 text-white px-8 py-3 hover:bg-stone-800 transition-colors duration-300 font-light w-full sm:w-auto text-center"
                 >
                   Chat on WhatsApp
                 </a>
                 <a 
                   href="tel:0661043677" 
-                  className="inline-block bg-stone-100 text-stone-900 px-8 py-3 hover:bg-stone-200 transition-colors duration-300 font-light"
+                  className="inline-block bg-stone-100 text-stone-900 px-8 py-3 hover:bg-stone-200 transition-colors duration-300 font-light w-full sm:w-auto text-center"
                 >
                   Call +27 66 104 3677
                 </a>
