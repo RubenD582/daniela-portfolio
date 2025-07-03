@@ -107,6 +107,14 @@ export default function Navbar() {
     navigate('/designs');
   };
 
+  const handleHomeClick = () => {
+    navigate('/');
+  };
+
+  const handleServicesClick = () => {
+    navigate('/services');
+  };
+
   return (
     <>
       {/* Main Navbar */}
@@ -124,14 +132,14 @@ export default function Navbar() {
 
           {/* Desktop Links */}
           <div className="hidden md:flex items-center space-x-8">
-            <a
-              href="#"
+            <button
+              onClick={handleHomeClick}
               className="text-stone-600 hover:text-stone-900 transition-colors text-sm font-light uppercase"
             >
               Home
-            </a>
+            </button>
             <button
-              onClick={() => handleScrollToSection('services')}
+              onClick={handleServicesClick}
               className="text-stone-600 hover:text-stone-900 transition-colors text-sm font-light uppercase"
             >
               Services
@@ -212,17 +220,16 @@ export default function Navbar() {
           <div className="flex flex-col h-full">
             <div className="flex-1 py-6">
               <nav className="space-y-1">
-                <a
-                  href="/"
-                  onClick={() => handleMobileNavClick()}
-                  className="flex items-center px-6 py-3 text-stone-700 hover:text-stone-900 hover:bg-stone-50 transition-colors group"
+                <button
+                  onClick={() => handleMobileNavClick(handleHomeClick)}
+                  className="flex items-center w-full px-6 py-3 text-left text-stone-700 hover:text-stone-900 hover:bg-stone-50 transition-colors group"
                 >
                   <span className="font-medium uppercase">Home</span>
                   <ChevronRight size={16} className="ml-auto text-stone-400 group-hover:text-stone-600 transition-colors" />
-                </a>
+                </button>
                 
                 <button
-                  onClick={() => handleMobileNavClick(() => handleScrollToSection('services'))}
+                  onClick={() => handleMobileNavClick(handleServicesClick)}
                   className="flex items-center w-full px-6 py-3 text-left text-stone-700 hover:text-stone-900 hover:bg-stone-50 transition-colors group"
                 >
                   <span className="font-medium uppercase">Services</span>

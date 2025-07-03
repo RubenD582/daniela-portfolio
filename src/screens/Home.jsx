@@ -341,7 +341,7 @@ export default function Home() {
       </section>
 
       {/* Testimonials */}
-      <section className="py-20 sm:py-24 bg-gradient-to-br from-gray-50 to-white w-full">
+      <section id="testimonials" className="py-20 sm:py-24 bg-gradient-to-br from-gray-50 to-white w-full">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div 
             initial="hidden"
@@ -403,7 +403,7 @@ export default function Home() {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-20 sm:py-24 bg-white w-full">
+      <section id="faq" className="py-20 sm:py-24 bg-white w-full">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div 
             initial="hidden"
