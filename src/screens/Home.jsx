@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { ArrowRight, Star } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { scrollToElement } from '../components/scrollUtils';
+import ContactSection from './Contact';
 
 export const faqs = [
   {
@@ -410,6 +412,8 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <ContactSection />
 
       {/* Footer */}
       <footer style={{ 
